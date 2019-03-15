@@ -9,9 +9,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^3.0.4",
+    "bcrypt-nodejs": "0.0.3",
     "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-logger": "^3.2.0",
-    "koa-router": "^7.4.0"
+    "koa-passport": "^4.1.1",
+    "koa-router": "^7.4.0",
+    "moment": "^2.24.0",
+    "mysql": "^2.16.0",
+    "mysql2": "^1.6.5",
+    "node-bcrypt": "0.0.1",
+    "nodemailer": "^5.1.1",
+    "sequelize": "^5.1.0"
   }
 }
