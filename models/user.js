@@ -39,11 +39,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false
     },
-    //Token for token based authentication
-    "token":{
-      type : DataTypes.STRING,
-      allowNull: true //true because of previous users
-    }
   });
 
     User.associate = function(models) {
