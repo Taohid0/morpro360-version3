@@ -1,0 +1,7 @@
+const db = require("../models");
+const Router = require("koa-router");
+
+const router = new Router({
+    prefix:"/auth"
+});
+

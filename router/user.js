@@ -2,6 +2,7 @@ const db = require("../models");
 const passport = require("../config/passport");
 const Strategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt-nodejs");
+const Router = require("koa-router");
 
 passport.use(
     new Strategy(
@@ -17,7 +18,6 @@ passport.use(
 );
 
 
-const Router = require("koa-router");
 
 const router = new Router({
     prefix:"/user"
@@ -25,8 +25,24 @@ const router = new Router({
 
 
 //handle get request
-router.get("/",async (ctx,next)=>{
-    ctx.body = "hello";
+router.get("/:id",async (ctx,next)=>{
+    try{
+        const promise = await db.User.findOne({where:{"id":ctx.params.id}});
+        ctx.response.status=200;
+        const data = promise._previousDataValues;
+        delete data.password;
+        ctx.body={
+            status:true,
+            user: data
+        }
+    }
+    catch(err){
+        ctx.response.status=404;
+        ctx.body={
+            status:false
+        }
+    }
+
     await next();
 });
 
@@ -36,16 +52,17 @@ router.post("/", async(ctx,next)=>{
         const promise = await db.User.create(ctx.request.body);
         ctx.response.status = 201;
         ctx.body={
-            status:"true",
+            status:true,
             user:promise._previousDataValues
         }
+        console.log(promise.json());
     }
     catch(err)
     {
         ctx.response.status = 400;
         const createErrors = err.errors;
         let errors=  [];
-        for (error of createErrors){
+        for (const error of createErrors){
             errors.push(error.message);
         }
         ctx.body={
