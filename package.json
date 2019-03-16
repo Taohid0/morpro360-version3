@@ -21,6 +21,7 @@
     "mysql2": "^1.6.5",
     "node-bcrypt": "0.0.1",
     "nodemailer": "^5.1.1",
+    "passport-local": "^1.0.0",
     "sequelize": "^5.1.0"
   }
 }
