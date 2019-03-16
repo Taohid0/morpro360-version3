@@ -24,7 +24,33 @@ const router = new Router({
 });
 
 
-//handle get request
+router.get("/", async (ctx, next)=>{
+    try{
+        const promise = await db.User.findAll({});
+        ctx.response.status=200;
+        let users = [];
+        for (let i=0;i<promise.length;i++)
+        {
+            const data = promise[i]._previousDataValues;
+            delete data.password;
+            users.push(data);
+        }
+        ctx.response.status=200;
+        ctx.body={
+            status:true,
+            users
+        }
+        await next();
+    }
+    catch(err){
+        ctx.response.status=400;
+        ctx.body={
+            status:false
+        }
+    }
+})
+
+//handle get request for single user
 router.get("/:id",async (ctx,next)=>{
     try{
         const promise = await db.User.findOne({where:{"id":ctx.params.id}});
@@ -35,6 +61,7 @@ router.get("/:id",async (ctx,next)=>{
             status:true,
             user: data
         }
+        await next();
     }
     catch(err){
         ctx.response.status=404;
@@ -43,7 +70,7 @@ router.get("/:id",async (ctx,next)=>{
         }
     }
 
-    await next();
+
 });
 
 //handle post (create) request
@@ -55,6 +82,7 @@ router.post("/", async(ctx,next)=>{
             status:true,
             user:promise._previousDataValues
         }
+        await next();
         console.log(promise.json());
     }
     catch(err)
@@ -69,6 +97,6 @@ router.post("/", async(ctx,next)=>{
             errors
         }
     }
-     await next();
+ 
 })
 module.exports = router;
