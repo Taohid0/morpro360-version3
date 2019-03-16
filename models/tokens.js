@@ -1,12 +1,11 @@
 module.exports = function(sequelize, DataTypes) {
   var Tokens = sequelize.define("Tokens", {
-    // Giving the Author model a name of type STRING
+    // Giving the Tokens model an attribute token of type STRING
     "token": DataTypes.STRING
   });
 
   Tokens.associate = function(models) {
-    // Associating Author with Posts
-    // When an Author is deleted, also delete any associated Posts
+    // Associating Tokens with User
     Tokens.belongsTo(models.User);
     
     
