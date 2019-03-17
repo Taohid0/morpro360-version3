@@ -29,21 +29,21 @@ const router = new Router({
 router.get("/", async (ctx, next) => {
   try {
     const promise = await db.User.findAll({});
-    ctx.response.status = 200;
+    ctx.status = 200;
     let users = [];
     for (let i = 0; i < promise.length; i++) {
-      const data = promise[i]._previousDataValues;
+      const data = promise[i].dataValues;
       delete data.password;
       users.push(data);
     }
-    ctx.response.status = 200;
+    ctx.status = 200;
     ctx.body = {
       status: true,
       users
     };
     await next();
   } catch (err) {
-    ctx.response.status = 400;
+    ctx.status = 400;
     ctx.body = {
       status: false
     };
@@ -54,8 +54,8 @@ router.get("/", async (ctx, next) => {
 router.get("/:id", async (ctx, next) => {
   try {
     const promise = await db.User.findOne({ where: { id: ctx.params.id } });
-    ctx.response.status = 200;
-    const data = promise._previousDataValues;
+    ctx.status = 200;
+    const data = promise.dataValues;
     delete data.password;
     ctx.body = {
       status: true,
@@ -63,7 +63,7 @@ router.get("/:id", async (ctx, next) => {
     };
     await next();
   } catch (err) {
-    ctx.response.status = 404;
+    ctx.status = 404;
     ctx.body = {
       status: false
     };
@@ -73,23 +73,33 @@ router.get("/:id", async (ctx, next) => {
 //handle post (create) request
 router.post("/", async (ctx, next) => {
   try {
+    //create new user from post data
     const promise = await db.User.create(ctx.request.body);
-    ctx.response.status = 201;
-    console.log(promise);
+    
+    //generate hashString for token
+    const hashString = userUtil.getHash(ctx.request.body.email);
+    //create session
+    const sessionPromise  = await db.Session.create({token:hashString,UserId:promise.dataValues.id});
+    //set status and response   
+    ctx.status=201
     ctx.body = {
       status: true,
-      user: promise._previousDataValues
+      user: promise.dataValues,
+      session: sessionPromise.dataValues
     };
-    const hashString = userUtil.getHash("abc@gmail.com");
+    //if everything goes fine then call next middleware
     await next();
   } catch (err) {
-    ctx.response.status = 400;
+    //if any error occurs set status code
+    ctx.status = 400;
     const createErrors = err.errors;
     let errors = [];
+    //loop through the errors and create an array of errors
     for (const error of createErrors) {
       errors.push(error.message);
     }
     ctx.body = {
+      status:false,
       errors
     };
   }
@@ -101,7 +111,7 @@ router.put("/", async (ctx, next) => {
   try {
     //if token not found return errors
     if (!ctx.request.body.token || !ctx.request.body.id) {
-      ctx.response.status = 400;
+      ctx.status = 400;
       ctx.body = {
         status: false,
         errors: "token/id can't be blank"
@@ -114,7 +124,7 @@ router.put("/", async (ctx, next) => {
     });
 
     if (!promise) {
-      ctx.response.status = HttpStatus.NOT_FOUND;
+      ctx.status = HttpStatus.NOT_FOUND;
       ctx.body = {
         status: false,
         errors: "user not fount"
@@ -122,7 +132,7 @@ router.put("/", async (ctx, next) => {
       return;
     } //need to complete using tokens model
     if (ctx.request.body.password !== promise.dataValues.password) {
-      ctx.response.status = HttpStatus.BAD_REQUEST;
+      ctx.status = HttpStatus.BAD_REQUEST;
       ctx.body = {
         status: false,
         errors: "user not found"
@@ -135,7 +145,7 @@ router.put("/", async (ctx, next) => {
     if (promise) {
         try {
             const dataPromise = await db.User.findOne({ where: { id: ctx.request.body.id} });
-            ctx.response.status = 200;
+            ctx.status = 200;
             const data = dataPromise.dataValues;
             delete data.password;
             ctx.body = {
@@ -144,7 +154,7 @@ router.put("/", async (ctx, next) => {
             };
             await next();
           } catch (err) {
-            ctx.response.status = HttpStatus.INTERNAL_SERVER_ERROR;
+            ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
             ctx.body = {
               status: false
             };
@@ -152,7 +162,7 @@ router.put("/", async (ctx, next) => {
     }
   } catch (err) {
     //if any errors return 400
-    ctx.response.status = HttpStatus.BAD_REQUEST;
+    ctx.status = HttpStatus.BAD_REQUEST;
     ctx.body = {
       status: false
     };

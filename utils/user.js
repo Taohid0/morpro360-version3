@@ -5,8 +5,8 @@ function getHash(email){
     const randomNumber = String(Math.random());
     const originalString = email+currentTime+randomNumber;
 
+    console.log(originalString);
     const hashString = md5(originalString);
-    console.log(hashString);
     return hashString;
 
 }
