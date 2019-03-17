@@ -4,6 +4,9 @@ const Strategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt-nodejs");
 const Router = require("koa-router");
 const HttpStatus = require("http-status-codes");
+const userUtil = require("../utils/user");
+
+//_previousDataValue or dataValue? should be checcked using postman
 
 passport.use(
   new Strategy((username, password, cb) => {
@@ -72,10 +75,12 @@ router.post("/", async (ctx, next) => {
   try {
     const promise = await db.User.create(ctx.request.body);
     ctx.response.status = 201;
+    console.log(promise);
     ctx.body = {
       status: true,
       user: promise._previousDataValues
     };
+    const hashString = userUtil.getHash("abc@gmail.com");
     await next();
   } catch (err) {
     ctx.response.status = 400;
@@ -131,7 +136,6 @@ router.put("/", async (ctx, next) => {
         try {
             const dataPromise = await db.User.findOne({ where: { id: ctx.request.body.id} });
             ctx.response.status = 200;
-            console.log(dataPromise);
             const data = dataPromise.dataValues;
             delete data.password;
             ctx.body = {

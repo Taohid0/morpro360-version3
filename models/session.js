@@ -1,15 +1,15 @@
 module.exports = function(sequelize, DataTypes) {
-  var Tokens = sequelize.define("Tokens", {
+  var Session = sequelize.define("Session", {
     // Giving the Tokens model an attribute token of type STRING
     "token": DataTypes.STRING
   });
 
-  Tokens.associate = function(models) {
+  Session.associate = function(models) {
     // Associating Tokens with User
-    Tokens.belongsTo(models.User);
+    Session.belongsTo(models.User);
     
     
   };
 
-  return Tokens;
+  return Session;
 };
