@@ -74,12 +74,13 @@ router.get("/:id", async (ctx, next) => {
 //handle post (create) request
 router.post("/", async (ctx, next) => {
 
+  //check whether username is already taken
   const userNameTaken = await userUtil.isUserNameTaken(ctx);
   if(userNameTaken){
     ctx.status = HttpStatus.BAD_REQUEST;
     ctx.body={
       status:false,
-      errrs : "userName alrady used"
+      errors : "userName already used"
     }
     return;
   }
@@ -89,27 +90,38 @@ router.post("/", async (ctx, next) => {
     const promise = await db.User.create(ctx.request.body);
     
     //generate hashString for token
-    const hashString = userUtil.getHash(ctx.request.body.email);
+    const hashString = userUtil.getHash(ctx.request.body.email,ctx.request.body.password);
+
     //create session
     const sessionPromise  = await db.Session.create({token:hashString,UserId:promise.dataValues.id});
-    //set status and response   
+    
+    //extract user data and remove password field
+    const userData = promise.dataValues;
+    delete userData.password;
+    
+    //extract session data
+    const sessionData = sessionPromise.dataValues;
+
+   //set status and response   
     ctx.status=HttpStatus.CREATED
     ctx.body = {
       status: true,
-      user: promise.dataValues,
-      session: sessionPromise.dataValues
+      user: userData,
+      session: sessionData
     };
     //if everything goes fine then call next middleware
     await next();
   } catch (err) {
-    //if any error occurs set status code
-    ctx.status = HttpStatus.BAD_REQUEST;
+
+    //loop through the errors and create an array of errors
     const createErrors = err.errors;
     let errors = [];
-    //loop through the errors and create an array of errors
+
     for (const error of createErrors) {
       errors.push(error.message);
-    }
+    }    
+    //set status code and response body for error
+    ctx.status = HttpStatus.BAD_REQUEST;
     ctx.body = {
       status:false,
       errors

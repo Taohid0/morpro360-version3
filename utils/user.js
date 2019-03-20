@@ -2,10 +2,10 @@ const md5 = require("md5");
 
 const db = require("../models");
 
-function getHash(email) {
+function getHash(email,password) {
   const currentTime = String(Date());
   const randomNumber = String(Math.random());
-  const originalString = email + currentTime + randomNumber;
+  const originalString = email +password+ currentTime + randomNumber;
 
   console.log(originalString);
   const hashString = md5(originalString);
