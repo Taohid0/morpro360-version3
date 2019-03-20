@@ -73,6 +73,17 @@ router.get("/:id", async (ctx, next) => {
 
 //handle post (create) request
 router.post("/", async (ctx, next) => {
+
+  const userNameTaken = await userUtil.isUserNameTaken(ctx);
+  if(userNameTaken){
+    ctx.status = HttpStatus.BAD_REQUEST;
+    ctx.body={
+      status:false,
+      errrs : "userName alrady used"
+    }
+    return;
+  }
+
   try {
     //create new user from post data
     const promise = await db.User.create(ctx.request.body);
