@@ -1,22 +1,26 @@
 module.exports = function(sequelize, DataTypes) {
-  var Cms= sequelize.define("Cms", {
+  var Company= sequelize.define("Company", {
     // Giving the Author model a name of type STRING
 
-    "Company": DataTypes.STRING,
-    "contact_Name": DataTypes.STRING,
+    "name":DataTypes.STRING,
+    //"Company": DataTypes.STRING,
+    //Till now I didn't get any use case of contact_name
+    //"contact_Name": DataTypes.STRING,
     "email": DataTypes.STRING,
     "phone": DataTypes.STRING,
-    "payment": DataTypes.STRING,
-    "Notes": DataTypes.STRING
+    //what is payment here?
+    //"payment": DataTypes.STRING,
+    //"Notes": DataTypes.STRING
+    "description":DataTypes.STRING
 
   });
 
 
-     Cms.associate = function(models) {
-     Cms.belongsToMany(models.User, {through: 'user_cms', foreignKey: 'CmsId' })
+     Company.associate = function(models) {
+     Company.belongsToMany(models.User, {through: 'user_Company', foreignKey: 'CompanyId' })
 
    };
 
 
-  return Cms;
+  return Company;
 };

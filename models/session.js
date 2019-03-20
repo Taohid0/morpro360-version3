@@ -6,7 +6,7 @@ module.exports = function(sequelize, DataTypes) {
 
   Session.associate = function(models) {
     // Associating Tokens with User
-    Session.belongsTo(models.User);
+    Session.belongsTo(models.User,{through:"user"});
     
     
   };

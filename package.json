@@ -24,6 +24,7 @@
     "node-bcrypt": "0.0.1",
     "nodemailer": "^5.1.1",
     "passport-local": "^1.0.0",
-    "sequelize": "^5.1.0"
+    "sequelize": "^5.1.0",
+    "sequelize-cli": "^5.4.0"
   }
 }

@@ -151,7 +151,7 @@ router.put("/", async (ctx, next) => {
             const data = dataPromise.dataValues;
             delete data.password;
             //retrieve session data
-            const sessionPromise = await db.Session.update({token:ctx.request.body.token},{where:{id:data.id}});
+            const sessionPromise = await db.Session.update({token:ctx.request.body.token},{where:{UserId:data.id}});
             //set successful status and response
             ctx.status = HttpStatus.OK;
             ctx.body = {

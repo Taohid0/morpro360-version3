@@ -1,30 +1,91 @@
 module.exports = function(sequelize, DataTypes) {
   var Loads= sequelize.define("Loads", {
     // Giving the Author model a name of type STRING
-    "name": DataTypes.STRING,
-    "Company": DataTypes.STRING,
-    "LoadNumber": DataTypes.STRING,
-    "PickUp": DataTypes.STRING,
-    "Dropoff": DataTypes.STRING,
-    "Weight": DataTypes.STRING,
-    "Rate": DataTypes.INTEGER,
-    "DriverStatus": DataTypes.STRING,
+    "name": {
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    // "company": {
+    //   type:DataTypes.STRING,
+    //   allowNull:false
+    // },
+    "loadNumber": {
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    "pickUpTime":{
+    type : DataTypes.DATE,
+    allowNull:false
+    },
+    "dropOffTime":{
+      type:DataTypes.DATE,
+      allowNull:false
+    } ,
+    "weight": {
+      type:DataTypes.STRING,
+      allowNull:false,
+    },
+    //"rate": DataTypes.INTEGER,
+    "cost":{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    "driverStatus": {
+      type:DataTypes.STRING,
+      allowNull:false
+    },
 
-    "product": DataTypes.STRING,
-    "PickUpAdress" : DataTypes.STRING,
-    "PickUpCity":DataTypes.STRING,
-    "PickUpZip":DataTypes.STRING,
-    "PickUpState":DataTypes.STRING,
+    "productDetails":{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
 
-    "DropOffAdress":DataTypes.STRING,
-    "DropOffCity":DataTypes.STRING,
-    "DropOffZip":DataTypes.STRING,
-    "DropOffState":DataTypes.STRING,
-    "PickUpNumber":DataTypes.STRING,
-    "Phone":DataTypes.STRING,
+    //pick up address details 
+    "pickUpAdress" : {
+      type: DataTypes.STRING,
+      allowNull:false
+    },
+    "pickUpCity":{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    "pickUpZipCode":{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    "pickUpState":
+    {
+      type:DataTypes.STRING,
+      allowNull:false
+    },
 
 
-    "Status": {
+    //drop off address details
+    "dropOffAddress":{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    "dropOffCity":{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    "dropOffZipCode":{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    "dropOffState":{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    //what is it?
+    // "pickUpNumber":DataTypes.STRING,
+
+    "phone":{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+
+    "status": {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false}
@@ -33,8 +94,16 @@ module.exports = function(sequelize, DataTypes) {
 
 
      Loads.associate = function(models) {
-     Loads.belongsToMany(models.User, {through:'LoadsUser'});
-     Loads.belongsTo(models.Address,{as:'loadAdress', foreignKey:'AddressId'}  );
+     //Loads.belongsToMany(models.User, {through:'LoadsUser'});
+     //Loads.belongsTo(models.User,{as:"broker"});
+     //I didn't get why this relation is needed
+     //Loads.belongsTo(models.Address,{as:'loadAdress', foreignKey:'AddressId'}  );
+
+     Loads.belongsTo(models.Company,{as:"offererCompany",allowNull:false});
+     Loads.belongsTo(models.User,{as:"broker",allowNull:false});
+
+     Loads.belongsTo(models.Company,{as:"assignedCompany",allowNull:true});
+     Loads.belongsTo(models.User,{as:"assignedUser",allowNull:true});
      // Loads.belongsToMany(models.Address, {through:'LoadsUser'});
      // Loads.belongsToMany(models.Address, {through:'LoadAdress'});
 
