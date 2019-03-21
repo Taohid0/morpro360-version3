@@ -7,6 +7,7 @@ const HttpStatus = require("http-status-codes");
 const userUtil = require("../utils/user");
 const Sequelize = require("sequelize");
 
+const userValidation = require("../validation/functions/user");
 //_previousDataValue or dataValue? should be checcked using postman
 
 passport.use(
@@ -54,7 +55,8 @@ router.get("/", async (ctx, next) => {
 //handle get request for single user
 router.get("/:id", async (ctx, next) => {
   try {
-    const promise = await db.User.findOne({ where: { id: ctx.params.id } });
+    const {id} = ctx.params;
+    const promise = await db.User.findOne({ where: { id } });
     ctx.status = 200;
     const data = promise.dataValues;
     delete data.password;
@@ -73,11 +75,24 @@ router.get("/:id", async (ctx, next) => {
 
 //handle post (create) request
 router.post("/", async (ctx, next) => {
+  const requestData = ctx.request.body;
+  
+  //validate data using joi package
+  const validationErrors = userValidation.isValidUderData(requestData);
+
+  if(validationErrors)
+  {
+    ctx.body = {
+      status:false,
+      errors: validationErrors
+    }
+    return;
+  }
 
   //check whether username is already taken
   const userNameTaken = await userUtil.isUserNameTaken(ctx);
   if(userNameTaken){
-    ctx.status = HttpStatus.BAD_REQUEST;
+    ctx.status = HttpStatus.OK;
     ctx.body={
       status:false,
       errors : "userName already used"
@@ -87,10 +102,10 @@ router.post("/", async (ctx, next) => {
 
   try {
     //create new user from post data
-    const promise = await db.User.create(ctx.request.body);
+    const promise = await db.User.create(requestData);
     
     //generate hashString for token
-    const hashString = userUtil.getHash(ctx.request.body.email,ctx.request.body.password);
+    const hashString = userUtil.getHash(requestData.email,requestData.password);
 
     //create session
     const sessionPromise  = await db.Session.create({token:hashString,UserId:promise.dataValues.id});
@@ -121,7 +136,7 @@ router.post("/", async (ctx, next) => {
       errors.push(error.message);
     }    
     //set status code and response body for error
-    ctx.status = HttpStatus.BAD_REQUEST;
+    ctx.status = HttpStatus.OK;
     ctx.body = {
       status:false,
       errors

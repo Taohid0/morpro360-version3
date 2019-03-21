@@ -16,6 +16,8 @@ router.post("/login", async (ctx,next)=>{
     const data = ctx.request.body;
     const email = data.email;
     const password = data.password;
+
+    //if email or password not present return error
     if(!email || !password){
         ctx.status = HttpStatus.BAD_REQUEST;
         ctx.body = {
@@ -24,7 +26,9 @@ router.post("/login", async (ctx,next)=>{
         }
         return;
     }
+    //find user using email
     const promise = await db.User.findOne({where:{email:email}});
+    //if no user found return error
     if (!promise){
         ctx.status = HttpStatus.UNAUTHORIZED;
         ctx.body ={
@@ -33,7 +37,9 @@ router.post("/login", async (ctx,next)=>{
         }
         return;
     }
+    //compare password using bcrypt package
     const isAuthencated = bcrypt.compareSync(ctx.request.body.password, promise.dataValues.password);
+    //if password mismatched return error
     if(!isAuthencated){
         ctx.status = HttpStatus.UNAUTHORIZED;
         ctx.body = {
@@ -42,12 +48,15 @@ router.post("/login", async (ctx,next)=>{
         }
         return;
     }
-
+    //generate hash string using email and password
     const hashString = userUtils.getHash(email,password);
+    //create session data to session table
     const sessionPromise  = await db.Session.create({"token":hashString,UserId:promise.dataValues.id});
 
+    //delete password from user data
     delete promise.dataValues.password;
 
+    //set status and response for successful request
     ctx.status = HttpStatus.OK;
     ctx.body = {
         status:true,
@@ -55,6 +64,8 @@ router.post("/login", async (ctx,next)=>{
         session:sessionPromise
     }
 
+    //call next middleware
     next();
 });
+
 module.exports = router;
