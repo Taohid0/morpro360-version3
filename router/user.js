@@ -75,10 +75,10 @@ router.get("/:id", async (ctx, next) => {
 
 //handle post (create) request
 router.post("/", async (ctx, next) => {
-  const requestData = ctx.request.body;
+  const data = ctx.request.body;
   
   //validate data using joi package
-  const validationErrors = userValidation.isValidUderData(requestData);
+  const validationErrors = userValidation.isValidUderData(data);
 
   if(validationErrors)
   {
@@ -90,22 +90,23 @@ router.post("/", async (ctx, next) => {
   }
 
   //check whether username is already taken
+  //this manual checking is needed because we won't have username in login with gmail mechanish
   const userNameTaken = await userUtil.isUserNameTaken(ctx);
   if(userNameTaken){
     ctx.status = HttpStatus.OK;
     ctx.body={
       status:false,
-      errors : "userName already used"
+      errors : ["username already used",]
     }
     return;
   }
 
   try {
     //create new user from post data
-    const promise = await db.User.create(requestData);
+    const promise = await db.User.create(data);
     
     //generate hashString for token
-    const hashString = userUtil.getHash(requestData.email,requestData.password);
+    const hashString = userUtil.getHash(data.email,data.password);
 
     //create session
     const sessionPromise  = await db.Session.create({token:hashString,UserId:promise.dataValues.id});
@@ -117,12 +118,13 @@ router.post("/", async (ctx, next) => {
     //extract session data
     const sessionData = sessionPromise.dataValues;
 
+    //token added to user data
+    userData.token = sessionData.token;
    //set status and response   
     ctx.status=HttpStatus.CREATED
     ctx.body = {
       status: true,
-      user: userData,
-      session: sessionData
+      user: userData
     };
     //if everything goes fine then call next middleware
     await next();
