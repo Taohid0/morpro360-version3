@@ -37,8 +37,11 @@ router.post("/login", async (ctx,next)=>{
         }
         return;
     }
+
+    const userData = promise.dataValues;
+
     //compare password using bcrypt package
-    const isAuthencated = bcrypt.compareSync(ctx.request.body.password, promise.dataValues.password);
+    const isAuthencated = bcrypt.compareSync(ctx.request.body.password, userData.password);
     //if password mismatched return error
     if(!isAuthencated){
         ctx.status = HttpStatus.UNAUTHORIZED;
@@ -53,15 +56,18 @@ router.post("/login", async (ctx,next)=>{
     //create session data to session table
     const sessionPromise  = await db.Session.create({"token":hashString,UserId:promise.dataValues.id});
 
+    const sessionData = sessionPromise.dataValues;
+
     //delete password from user data
-    delete promise.dataValues.password;
+    delete sessionData.password;
+
+    userData.token = sessionData.token;
 
     //set status and response for successful request
     ctx.status = HttpStatus.OK;
     ctx.body = {
         status:true,
-        user:promise.dataValues,
-        session:sessionPromise
+        data:userData
     }
 
     //call next middleware

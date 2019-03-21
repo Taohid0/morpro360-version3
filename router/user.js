@@ -124,7 +124,7 @@ router.post("/", async (ctx, next) => {
     ctx.status=HttpStatus.CREATED
     ctx.body = {
       status: true,
-      user: userData
+      data: userData
     };
     //if everything goes fine then call next middleware
     await next();
