@@ -17,8 +17,9 @@ app.use(BodyParser());
 app.use(Logger());
 app.use(cors());
 
-app.use(userRoutes.routes());
-app.use(authRoutes.routes());
+app.use(userRoutes.routes()).use(userRoutes.allowedMethods());
+app.use(authRoutes.routes()).use(authRoutes.allowedMethods());
+
 
 // Syncing our database and logging a message to the user upon success
 db.sequelize.sync().then(function() {
