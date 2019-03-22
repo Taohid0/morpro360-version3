@@ -1,20 +1,16 @@
 const Joi = require("joi");
 const UserSchema = require("../schema/user");
+const getErrorArray = require("./utils");
 
-function isValidUderData(data) {
+function isValidUserData(data) {
     console.log(data);
   const { error, value } = Joi.validate(data, UserSchema);
 
   if (error) {
-    let errors = [];
-
-    for (let err of error.details) {
-      console.log(err);
-      errors.push(err.message);
-    }
+    const errors = getErrorArray(error);
     return errors;
   }
   return false;
 }
 
-module.exports = { isValidUderData };
+module.exports = { isValidUserData };

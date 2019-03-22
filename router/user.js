@@ -78,7 +78,7 @@ router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
   
   //validate data using joi package
-  const validationErrors = userValidation.isValidUderData(data);
+  const validationErrors = userValidation.isValidUserData(data);
 
   if(validationErrors)
   {
