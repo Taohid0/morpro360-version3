@@ -60,6 +60,7 @@ router.get("/:id", async (ctx, next) => {
     ctx.status = 200;
     const data = promise.dataValues;
     delete data.password;
+    
     ctx.body = {
       status: true,
       user: data
