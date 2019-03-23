@@ -8,8 +8,9 @@ const cors = require('koa-cors');
 var PORT = process.env.PORT || 3000;
 var db = require("./models");
 
-const userRoutes = require("./router/user.js");
-const authRoutes = require('./router/auth');
+const userRouter = require("./router/user.js");
+const authRouter = require('./router/auth');
+const companyRouter = require('./router/company');
 
 app = new Koa();
 
@@ -17,9 +18,9 @@ app.use(BodyParser());
 app.use(Logger());
 app.use(cors());
 
-app.use(userRoutes.routes()).use(userRoutes.allowedMethods());
-app.use(authRoutes.routes()).use(authRoutes.allowedMethods());
-
+app.use(userRouter.routes()).use(userRouter.allowedMethods());
+app.use(authRouter.routes()).use(authRouter.allowedMethods());
+app.use(companyRouter.routes()).use(companyRouter.allowedMethods());
 
 // Syncing our database and logging a message to the user upon success
 db.sequelize.sync().then(function() {

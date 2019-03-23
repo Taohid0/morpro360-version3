@@ -25,6 +25,28 @@ passport.use(
       "prefix":"/company"
   });
 
+  router.get("/", async(ctx,next)=>{
+    try{
+      const promise = await db.Company.findAll({});
+      ctx.status = 200;
+      ctx.body = {
+        status:true,
+        companies:promise
+      }
+    await next();
+    }
+    catch(err)
+    {
+      console.log(err);
+      ctx.status = 500;
+      ctx.body = {
+        status:false,
+        errors: ["Internal server error",]
+      }
+    }
+
+  })
+
 router.post("/",async (ctx,next)=>
 {
     const data = ctx.request.body;
@@ -48,3 +70,5 @@ router.post("/",async (ctx,next)=>
 
     
 })
+
+module.exports = router;

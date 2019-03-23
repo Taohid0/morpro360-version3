@@ -30,7 +30,7 @@ router.post("/login", async (ctx,next)=>{
     const promise = await db.User.findOne({where:{email:email}});
     //if no user found return error
     if (!promise){
-        ctx.status = HttpStatus.UNAUTHORIZED;
+        ctx.status = HttpStatus.OK;
         ctx.body ={
             status:false,
             errors:["user not found",]
@@ -44,7 +44,7 @@ router.post("/login", async (ctx,next)=>{
     const isAuthencated = bcrypt.compareSync(ctx.request.body.password, userData.password);
     //if password mismatched return error
     if(!isAuthencated){
-        ctx.status = HttpStatus.UNAUTHORIZED;
+        ctx.status = HttpStatus.OK;
         ctx.body = {
             status:false,
             errors:["email/password mismatched",]
@@ -59,7 +59,7 @@ router.post("/login", async (ctx,next)=>{
     const sessionData = sessionPromise.dataValues;
 
     //delete password from user data
-    delete sessionData.password;
+    delete userData.password;
 
     userData.token = sessionData.token;
 
