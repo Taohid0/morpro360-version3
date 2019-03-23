@@ -31,7 +31,7 @@ passport.use(
       ctx.status = 200;
       ctx.body = {
         status:true,
-        companies:promise
+        data:promise
       }
     await next();
     }
@@ -45,6 +45,28 @@ passport.use(
       }
     }
 
+  });
+
+  router.get("/:id", async(ctx,next)=>{
+    try{
+      const {id}= ctx.params;
+      const promise = await db.Company.findOne({where:{id}});
+
+      ctx.status = 200;
+      ctx.body = {
+        status:true,
+        data: promise
+      };
+      await next();
+    }
+    catch(err)
+    {
+      ctx.status = 400,
+      ctx.body = {
+        status:false,
+        errors: ["Internal Server error",]
+      }
+    }
   })
 
 router.post("/",async (ctx,next)=>

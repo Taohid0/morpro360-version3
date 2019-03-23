@@ -204,7 +204,7 @@ router.put("/", async (ctx, next) => {
             await next();
           } catch (err) {
             console.log(err);
-            //if any error occurs then set 400 status and return false status
+            //if any error occurs then set 500 status and return false status
             ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
             ctx.body = {
               status: false
@@ -212,9 +212,9 @@ router.put("/", async (ctx, next) => {
           }
     }
   } catch (err) {
-    //if any errors return 400
+    //if any errors return 500
     console.log(err);
-    ctx.status = HttpStatus.BAD_REQUEST;
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
     ctx.body = {
       status: false
     };
