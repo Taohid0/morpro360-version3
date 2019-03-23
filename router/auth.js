@@ -22,7 +22,7 @@ router.post("/login", async (ctx,next)=>{
         ctx.status = HttpStatus.BAD_REQUEST;
         ctx.body = {
             status:false,
-            errors:"email of password cannot be blank"
+            errors:["email of password cannot be blank",]
         }
         return;
     }
@@ -33,7 +33,7 @@ router.post("/login", async (ctx,next)=>{
         ctx.status = HttpStatus.UNAUTHORIZED;
         ctx.body ={
             status:false,
-            errors:"user not found"
+            errors:["user not found",]
         }
         return;
     }
@@ -47,7 +47,7 @@ router.post("/login", async (ctx,next)=>{
         ctx.status = HttpStatus.UNAUTHORIZED;
         ctx.body = {
             status:false,
-            errors:"email/password mismatched"
+            errors:["email/password mismatched",]
         }
         return;
     }
