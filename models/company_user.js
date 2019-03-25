@@ -3,8 +3,9 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   CompanyUser.associate = function(models) {
-      CompanyUser.belongsTo(models.User, {through:'user'});
-      CompanyUser.belongsTo(models.Company,{through:"company"});
-  }; 
-   return CompanyUser;
+    CompanyUser.belongsTo(models.User, {through:'user'});
+    CompanyUser.belongsTo(models.Company,{through:"company"});
+  };
+
+  return CompanyUser;
 };

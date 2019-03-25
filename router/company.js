@@ -6,6 +6,7 @@ const HttpStatus = require("http-status-codes");
 
 const db = require("../models");
 const companyValidation = require("../validation/functions/company");
+const tokenValidation = require("../utils/token");
 
 passport.use(
     new Strategy((username, password, cb) => {
@@ -85,6 +86,8 @@ router.post("/",async (ctx,next)=>
         return;
     }
     const {token} = data;
+    const isValidToken = await tokenValidation.checkTokenValidation(token)
+    console.log(isValidToken);
     //check token is valid
     //this check will be added later
 

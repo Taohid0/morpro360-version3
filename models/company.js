@@ -15,9 +15,8 @@ module.exports = function(sequelize, DataTypes) {
 
   });
 
-
      Company.associate = function(models) {
-     Company.belongsToMany(models.User, {through: 'CompanyUser', foreignKey: 'CompanyId' })
+    //  Company.belongsToMany(models.User, {through: 'CompanyUser', foreignKey: 'CompanyId' })
 
    };
 

@@ -9,10 +9,10 @@ module.exports = function(sequelize, DataTypes) {
     //   type:DataTypes.STRING,
     //   allowNull:false
     // },
-    "loadNumber": {
-      type:DataTypes.STRING,
-      allowNull:false
-    },
+    // "loadNumber": {
+    //   type:DataTypes.STRING,
+    //   allowNull:false
+    // },
     "pickUpTime":{
     type : DataTypes.DATE,
     allowNull:false
@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull:false,
     },
     //"rate": DataTypes.INTEGER,
-    "cost":{
+    "rate":{
       type:DataTypes.STRING,
       allowNull:false
     },
