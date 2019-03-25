@@ -12,6 +12,7 @@ async function checkTokenValidation(token) {
     const promise = await db.Session.findOne({
       where: { token, updatedAt: { [Op.gt]: thresholdTime } }
     });
+    console.log(promise);
 
     if (!promise) {
       deleteExpiredTokens();
@@ -19,7 +20,7 @@ async function checkTokenValidation(token) {
     } else {
       promise.changed("updatedAt", true);
       promise.save();
-      return true;
+      return promise;
     }
   } catch (err) {
     return false;
@@ -75,5 +76,5 @@ async function isTokenExists(email)
 module.exports = {
   checkTokenValidation,
   deleteExpiredTokens,
-  isTokenExists,
+  isTokenExists
 };

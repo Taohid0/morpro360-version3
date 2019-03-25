@@ -9,4 +9,6 @@ function getErrorArray(error)
     return errors;
 }
 
-module.exports = getErrorArray;
+module.exports = {
+    getErrorArray,
+}

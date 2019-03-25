@@ -40,9 +40,7 @@ router.post("/login", async (ctx,next)=>{
         return;
     }
 
-    const existingToken = await tokenValidation.isTokenExists(email);
-    console.log(existingToken,Boolean(existingToken));
-
+    
     const userData = promise.dataValues;
 
     //compare password using bcrypt package
@@ -56,6 +54,22 @@ router.post("/login", async (ctx,next)=>{
         }
         return;
     }
+
+    const existingToken = await tokenValidation.isTokenExists(email);
+
+    if(existingToken)
+    {
+        userData.token = existingToken.dataValues.token;
+
+        ctx.status = HttpStatus.OK;
+        ctx.body = {
+            status:true,
+            data : userData
+        }
+        await next();
+        return;
+    }
+
     //generate hash string using email and password
     const hashString = userUtils.getHash(email,password);
     //create session data to session table
@@ -76,7 +90,7 @@ router.post("/login", async (ctx,next)=>{
     }
 
     //call next middleware
-    next();
+    await next();
 });
 
 module.exports = router;

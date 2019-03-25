@@ -6,7 +6,7 @@ const LoadSchema ={
     pickUpTime : Joi.string().required(),
     dropOffTime: Joi.string().required(),
     weight : Joi.string().required(),
-    cost: Joi.string().required().numeric().positive().required(),
+    cost: Joi.number().integer().min(0).required(),
     driverStatus: Joi.string().required(),
     productDetails: Joi.string().required(),
     pickUpAddress : Joi.string().required(),
@@ -19,6 +19,8 @@ const LoadSchema ={
     dropOffState : Joi.string().required(),
     phone : Joi.string().required(),
     status : Joi.string().allow("").optional(),
-    offererCompanyId : Joi.string().numeric().positive().require(),
-    brokerId : Joi.string().numberic().positive().require()
+    offererCompanyId : Joi.number().integer().min(0).required(),
+    brokerId : Joi.number().integer().min(0).required(),
 }
+
+module.exports = LoadSchema;

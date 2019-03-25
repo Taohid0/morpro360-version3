@@ -7,102 +7,117 @@ const HttpStatus = require("http-status-codes");
 const db = require("../models");
 const companyValidation = require("../validation/functions/company");
 const tokenValidation = require("../utils/token");
+// const validationUtils = require("../validation/functions/utils");
 
 passport.use(
-    new Strategy((username, password, cb) => {
-      db.User.findOne({ where: { userName: username } }).then(user => {
-        if (!user) {
-          return cb(null, false);
-        }
-        if (!user.validPassword(password)) {
-          return cb(null, false);
-        }
-        return cb(null, user);
-      });
-    })
-  );
-
-  const router = new Router({
-      "prefix":"/company"
-  });
-
-  router.get("/", async(ctx,next)=>{
-    try{
-      const promise = await db.Company.findAll({});
-      ctx.status = 200;
-      ctx.body = {
-        status:true,
-        data:promise
+  new Strategy((username, password, cb) => {
+    db.User.findOne({ where: { userName: username } }).then(user => {
+      if (!user) {
+        return cb(null, false);
       }
-    await next();
-    }
-    catch(err)
-    {
-      console.log(err);
-      ctx.status = 500;
-      ctx.body = {
-        status:false,
-        errors: ["Internal server error",]
+      if (!user.validPassword(password)) {
+        return cb(null, false);
       }
-    }
-
-  });
-
-  router.get("/:id", async(ctx,next)=>{
-    try{
-      const {id}= ctx.params;
-      const promise = await db.Company.findOne({where:{id}});
-
-      ctx.status = 200;
-      ctx.body = {
-        status:true,
-        data: promise
-      };
-      await next();
-    }
-    catch(err)
-    {
-      ctx.status = 400,
-      ctx.body = {
-        status:false,
-        errors: ["Internal Server error",]
-      }
-    }
+      return cb(null, user);
+    });
   })
+);
 
-router.post("/",async (ctx,next)=>
-{
-    const data = ctx.request.body;
+const router = new Router({
+  prefix: "/company"
+});
 
-    //validate data using joi package
-    const validationErrors = companyValidation.isValidCompanyData(data);
-    
-    if (validationErrors)
-    {
-        ctx.body = {
-            status: false,
-            errors : validationErrors
-        }
-        return;
+router.get("/", async (ctx, next) => {
+  try {
+    const promise = await db.Company.findAll({});
+    ctx.status = 200;
+    ctx.body = {
+      status: true,
+      data: promise
+    };
+    await next();
+  } catch (err) {
+    console.log(err);
+    ctx.status = 500;
+    ctx.body = {
+      status: false,
+      errors: ["Internal server error",]
+    };
+  }
+});
+
+router.get("/:id", async (ctx, next) => {
+  try {
+    const { id } = ctx.params;
+    const promise = await db.Company.findOne({ where: { id } });
+
+    ctx.status = 200;
+    ctx.body = {
+      status: true,
+      data: promise
+    };
+    await next();
+  } catch (err) {
+    (ctx.status = 400),
+      (ctx.body = {
+        status: false,
+        errors: ["Internal Server error",]
+      });
+  }
+});
+
+router.post("/", async (ctx, next) => {
+  const data = ctx.request.body;
+
+  //validate data using joi package
+  const validationErrors = companyValidation.isValidCompanyData(data);
+
+  if (validationErrors) {
+    ctx.body = {
+      status: false,
+      errors: validationErrors
+    };
+    return;
+  }
+  const { token } = data;
+  const isValidToken = await tokenValidation.checkTokenValidation(token);
+  if (!isValidToken) {
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: false,
+      errors: ["Authentication failed",]
+    };
+    return;
+  }
+  const sessionData = isValidToken.dataValues;
+  try {
+    const promise = await db.Company.create(data);
+    const companyData = promise.dataValues;
+
+    const companyUserPromise = await db.CompanyUser.create({
+      UserId: sessionData.UserId,
+      CompanyId: companyData.id
+    });
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: true
+    };
+    await next();
+  } catch (err) {
+    console.log(err);
+    //loop through the errors and create an array of errors
+    const createErrors = err.errors;
+    let errors = [];
+
+    for (const error of createErrors) {
+      errors.push(error.message);
     }
-    const {token} = data;
-    const isValidToken = await tokenValidation.checkTokenValidation(token)
-    if(!isValidToken)
-    {
-      ctx.status = HttpStatus.OK;
-      ctx.body = {
-        status:false,
-        errors:["Authentication failed"]
-      }
-      return ;
-    }
-    console.log(isValidToken);
-    //check token is valid
-    //this check will be added later
-
-    
-
-    
-})
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: false,
+      errors
+    };
+  }
+});
 
 module.exports = router;
