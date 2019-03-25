@@ -13,12 +13,12 @@ module.exports = function(sequelize, DataTypes) {
     //   type:DataTypes.STRING,
     //   allowNull:false
     // },
-    "pickUpTime":{
-    type : DataTypes.DATE,
+    "pickUpDate":{
+    type : DataTypes.DATEONLY,
     allowNull:false
     },
-    "dropOffTime":{
-      type:DataTypes.DATE,
+    "dropOffDate":{
+      type:DataTypes.DATEONLY,
       allowNull:false
     } ,
     "weight": {
@@ -32,7 +32,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     "driverStatus": {
       type:DataTypes.STRING,
-      allowNull:false
+      allowNull:true
     },
 
     "productDetails":{
@@ -41,7 +41,7 @@ module.exports = function(sequelize, DataTypes) {
     },
 
     //pick up address details 
-    "pickUpAdress" : {
+    "pickUpAddress" : {
       type: DataTypes.STRING,
       allowNull:false
     },
@@ -82,7 +82,7 @@ module.exports = function(sequelize, DataTypes) {
 
     "phone":{
       type:DataTypes.STRING,
-      allowNull:false
+      allowNull:true
     },
 
     "status": {

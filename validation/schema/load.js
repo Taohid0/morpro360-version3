@@ -2,12 +2,12 @@ const Joi = require("joi");
 
 const LoadSchema ={
     name: Joi.string().required(),
-    loadNumber : Joi.string().required(),
-    pickUpTime : Joi.string().required(),
-    dropOffTime: Joi.string().required(),
+    // loadNumber : Joi.string().required(),
+    pickUpDate : Joi.date().required(),
+    dropOffDate: Joi.string().required(),
     weight : Joi.string().required(),
-    cost: Joi.number().integer().min(0).required(),
-    driverStatus: Joi.string().required(),
+    rate: Joi.number().integer().min(0).required(),
+    // driverStatus: Joi.string().required(),
     productDetails: Joi.string().required(),
     pickUpAddress : Joi.string().required(),
     pickUpCity: Joi.string().required(),
@@ -17,10 +17,11 @@ const LoadSchema ={
     dropOffCity : Joi.string().required(),
     dropOffZipCode: Joi.string().required(),
     dropOffState : Joi.string().required(),
-    phone : Joi.string().required(),
+    // phone : Joi.string().required(),
     status : Joi.string().allow("").optional(),
     offererCompanyId : Joi.number().integer().min(0).required(),
-    brokerId : Joi.number().integer().min(0).required(),
+    // brokerId : Joi.number().integer().min(0).required(),
+    token : Joi.string().required()
 }
 
 module.exports = LoadSchema;
