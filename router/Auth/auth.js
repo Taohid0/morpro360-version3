@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt-nodejs");
 const HttpStatus = require("http-status-codes");
 
 const userUtils = require("../../utils/user");
+const tokenValidation = require("../../utils/token");
 
 const router = new Router({
     prefix:"/auth"
@@ -26,6 +27,7 @@ router.post("/login", async (ctx,next)=>{
         }
         return;
     }
+
     //find user using email
     const promise = await db.User.findOne({where:{email:email}});
     //if no user found return error
@@ -37,6 +39,9 @@ router.post("/login", async (ctx,next)=>{
         }
         return;
     }
+
+    const existingToken = await tokenValidation.isTokenExists(email);
+    console.log(existingToken,Boolean(existingToken));
 
     const userData = promise.dataValues;
 

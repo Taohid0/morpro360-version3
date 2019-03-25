@@ -36,13 +36,44 @@ async function deleteExpiredTokens() {
     const deletePromise = await db.Session.destroy({
       where: { updatedAt: { [Op.lt]: thresholdTime } }
     });
+    console.log(deletePromise);
     return true;
   } catch (err) {
     return false;
   }
 }
 
+
+async function isTokenExists(email)
+{
+    const Op = Sequelize.Op;
+    let thresholdTime = new Date();
+    thresholdTime.setHours(thresholdTime.getHours() - 24);
+  
+    try {
+      const promise = await db.Session.findOne({
+        where: {updatedAt: { [Op.gt]: thresholdTime }},
+        include: {
+            model: db.User,
+            where: { email},
+          }
+      });
+      if (!promise) {
+        return false;
+      } else {
+        promise.changed("updatedAt", true);
+        promise.save();
+        return promise;
+      }
+    } catch (err) {
+        console.log(err);
+      return false;
+    }
+}
+
+
 module.exports = {
   checkTokenValidation,
-  deleteExpiredTokens
+  deleteExpiredTokens,
+  isTokenExists,
 };

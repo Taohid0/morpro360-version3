@@ -87,6 +87,15 @@ router.post("/",async (ctx,next)=>
     }
     const {token} = data;
     const isValidToken = await tokenValidation.checkTokenValidation(token)
+    if(!isValidToken)
+    {
+      ctx.status = HttpStatus.OK;
+      ctx.body = {
+        status:false,
+        errors:["Authentication failed"]
+      }
+      return ;
+    }
     console.log(isValidToken);
     //check token is valid
     //this check will be added later
