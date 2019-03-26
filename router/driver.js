@@ -1,13 +1,11 @@
 const Router = require("koa-router");
-const Sequelize = require("sequelize");
 const passport = require("../config/passport");
 const Strategy = require("passport-local").Strategy;
 const HttpStatus = require("http-status-codes");
 
 const db = require("../models");
 const tokenValidation = require("../utils/token");
-// const validationUtils = require("../validation/functions/utils");
-const CompanySchema = require("../validation/schema/company");
+const DriverSchema = require("../validation/schema/driver");
 const validationUtils = require("../validation/functions/utils");
 
 
@@ -26,12 +24,12 @@ passport.use(
 );
 
 const router = new Router({
-  prefix: "/company"
+  prefix: "/driver"
 });
 
 router.get("/", async (ctx, next) => {
   try {
-    const promise = await db.Company.findAll({});
+    const promise = await db.Driver.findAll({});
     ctx.status = 200;
     ctx.body = {
       status: true,
@@ -51,7 +49,7 @@ router.get("/", async (ctx, next) => {
 router.get("/:id", async (ctx, next) => {
   try {
     const { id } = ctx.params;
-    const promise = await db.Company.findOne({ where: { id } });
+    const promise = await db.driver.findOne({ where: { id } });
 
     ctx.status = 200;
     ctx.body = {
@@ -72,7 +70,7 @@ router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
 
   //validate data using joi package
-  const validationErrors = validationUtils.isValidRequestData(data,CompanySchema);
+  const validationErrors = validationUtils.isValidRequestData(data,DriverSchema);
 
   if (validationErrors) {
     ctx.body = {
@@ -93,13 +91,9 @@ router.post("/", async (ctx, next) => {
   }
   const sessionData = isValidToken.dataValues;
   try {
-    const promise = await db.Company.create(data);
-    const companyData = promise.dataValues;
+    data.accountCreatorId = sessionData.UserId;
+    const promise = await db.Driver.create(data);
 
-    const companyUserPromise = await db.CompanyUser.create({
-      UserId: sessionData.UserId,
-      CompanyId: companyData.id
-    });
     ctx.status = HttpStatus.OK;
     ctx.body = {
       status: true

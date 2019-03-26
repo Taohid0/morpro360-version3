@@ -8,7 +8,7 @@ const userUtil = require("../utils/user");
 const Sequelize = require("sequelize");
 
 
-const UserSchema = require("../validation/schema/User");
+const UserSchema = require("../validation/schema/user");
 const validationUtils = require("../validation/functions/utils");
 //_previousDataValue or dataValue? should be checcked using postman
 

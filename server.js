@@ -15,6 +15,7 @@ const authRouter = require('./router/Auth/auth');
 const companyRouter = require('./router/company');
 const oauthRouter = require('./router/Auth/signUpWithGmail');
 const loadRouter = require("./router/load");
+const driverRouter = require("./router/driver");
 
 app.use(BodyParser());
 app.use(Logger());
@@ -25,6 +26,7 @@ app.use(authRouter.routes()).use(authRouter.allowedMethods());
 app.use(companyRouter.routes()).use(companyRouter.allowedMethods());
 app.use(oauthRouter.routes()).use(oauthRouter.allowedMethods());
 app.use(loadRouter.routes()).use(loadRouter.allowedMethods());
+app.use(driverRouter.routes()).use(driverRouter.allowedMethods());
 
 // Syncing our database and logging a message to the user upon success
 db.sequelize.sync().then(function() {

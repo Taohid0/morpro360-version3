@@ -38,6 +38,7 @@ module.exports = function(sequelize, DataTypes) {
   
        Driver.associate = function(models) {
         Driver.belongsTo(models.Company,{as:"company",allowNull:true});
+        Driver.belongsTo(models.User, {as:"accountCreator", allowNull:false});
      };
   
   
