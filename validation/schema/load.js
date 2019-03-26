@@ -7,6 +7,7 @@ const LoadSchema ={
     dropOffDate: Joi.string().required(),
     weight : Joi.string().required(),
     rate: Joi.number().integer().min(0).required(),
+    distance: Joi.number().integer().min(0).required(),
     // driverStatus: Joi.string().required(),
     productDetails: Joi.string().required(),
     pickUpAddress : Joi.string().required(),

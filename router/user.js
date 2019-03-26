@@ -7,7 +7,9 @@ const HttpStatus = require("http-status-codes");
 const userUtil = require("../utils/user");
 const Sequelize = require("sequelize");
 
-const userValidation = require("../validation/functions/user");
+
+const UserSchema = require("../validation/schema/User");
+const validationUtils = require("../validation/functions/utils");
 //_previousDataValue or dataValue? should be checcked using postman
 
 passport.use(
@@ -79,7 +81,7 @@ router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
   
   //validate data using joi package
-  const validationErrors = userValidation.isValidUserData(data);
+  const validationErrors = validationUtils.isValidRequestData(data,UserSchema);
 
   if(validationErrors)
   {

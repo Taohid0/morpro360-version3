@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-  var Loads= sequelize.define("Loads", {
+  var Loads= sequelize.define("Load", {
     // Giving the Author model a name of type STRING
     "name": {
       type:DataTypes.STRING,
@@ -13,6 +13,10 @@ module.exports = function(sequelize, DataTypes) {
     //   type:DataTypes.STRING,
     //   allowNull:false
     // },
+    "distance":{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+    },
     "pickUpDate":{
     type : DataTypes.DATEONLY,
     allowNull:false
@@ -104,6 +108,8 @@ module.exports = function(sequelize, DataTypes) {
 
      Loads.belongsTo(models.Company,{as:"assignedCompany",allowNull:true});
      Loads.belongsTo(models.User,{as:"assignedUser",allowNull:true});
+
+     Loads.belongsTo(models.Driver,{as:"assignedDriver",allowNull:true});
      // Loads.belongsToMany(models.Address, {through:'LoadsUser'});
      // Loads.belongsToMany(models.Address, {through:'LoadAdress'});
 

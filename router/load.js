@@ -5,8 +5,9 @@ const Strategy = require("passport-local").Strategy;
 const HttpStatus = require("http-status-codes");
 
 const db = require("../models");
-const loadValidation = require("../validation/functions/load");
 const tokenValidation = require("../utils/token");
+const LoadSchema = require("../validation/schema/load");
+const validationUtils = require("../validation/functions/utils");
 
 passport.use(
   new Strategy((username, password, cb) => {
@@ -69,7 +70,7 @@ router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
 
   //validate data using joi package
-  const validationErrors = loadValidation.isValidLoadData(data);
+  const validationErrors = validationUtils.isValidRequestData(data,LoadSchema);
 
   if (validationErrors) {
     ctx.body = {
@@ -91,7 +92,7 @@ router.post("/", async (ctx, next) => {
   const sessionData = isValidToken.dataValues;
   try {
     data.brokerId = sessionData.UserId;
-    const promise = await db.Loads.create(data);
+    const promise = await db.Load.create(data);
     const laodData = promise.dataValues;
 
     //   const companyUserPromise = await db.CompanyUser.create({

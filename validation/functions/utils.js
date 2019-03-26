@@ -1,3 +1,5 @@
+const Joi = require("joi");
+
 function getErrorArray(error)
 {
     let errors = [];
@@ -9,6 +11,22 @@ function getErrorArray(error)
     return errors;
 }
 
+
+
+
+function isValidRequestData(data,schema)
+{
+    const {error, value} = Joi.validate(data,schema);
+    if (error)
+    {
+        const errors = errorUtils.getErrorArray(error);
+        return errors;
+    }
+    return false;
+}
+
+
 module.exports = {
     getErrorArray,
+    isValidRequestData,
 }

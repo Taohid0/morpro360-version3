@@ -8,6 +8,9 @@ const db = require("../models");
 const companyValidation = require("../validation/functions/company");
 const tokenValidation = require("../utils/token");
 // const validationUtils = require("../validation/functions/utils");
+const CompanySchema = require("../validation/schema/company");
+const validationUtils = require("../validation/functions/utils");
+
 
 passport.use(
   new Strategy((username, password, cb) => {
@@ -70,7 +73,7 @@ router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
 
   //validate data using joi package
-  const validationErrors = companyValidation.isValidCompanyData(data);
+  const validationErrors = validationUtils.isValidRequestData(data,CompanySchema);
 
   if (validationErrors) {
     ctx.body = {
