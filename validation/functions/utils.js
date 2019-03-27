@@ -19,7 +19,7 @@ function isValidRequestData(data,schema)
     const {error, value} = Joi.validate(data,schema);
     if (error)
     {
-        const errors = errorUtils.getErrorArray(error);
+        const errors = getErrorArray(error);
         return errors;
     }
     return false;

@@ -12,7 +12,14 @@ module.exports = function(sequelize, DataTypes) {
         unique:true
   
       },
-
+      "email": {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: true
+        }
+      },
       "state":{
         type:DataTypes.STRING,
         allowNull:false,
@@ -31,13 +38,13 @@ module.exports = function(sequelize, DataTypes) {
       "license": {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        // unique: true,
       },
   
     });
   
        Driver.associate = function(models) {
-        Driver.belongsTo(models.Company,{as:"company",allowNull:true});
+        Driver.belongsTo(models.Company,{as:"company",allowNull:false});
         Driver.belongsTo(models.User, {as:"accountCreator", allowNull:false});
      };
   

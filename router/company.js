@@ -122,4 +122,8 @@ router.post("/", async (ctx, next) => {
   }
 });
 
+router.get("/owned-companies",async (ctx,next)=>{
+  console.log(ctx.UserId);
+  await next();
+})
 module.exports = router;
