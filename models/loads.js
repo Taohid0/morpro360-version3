@@ -90,9 +90,16 @@ module.exports = function(sequelize, DataTypes) {
     },
 
     "status": {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.STRING,
+      // A = Active
+      // P = Picked up
+      // I = Inroute 
+      // D = delivered
+      values:["A","P","I","D"],
       allowNull: false,
-      defaultValue: false}
+      defaultValue: "A"
+    }
+
   });
 
 

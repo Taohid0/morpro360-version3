@@ -21,8 +21,8 @@ const LoadSchema ={
     // phone : Joi.string().required(),
     status : Joi.string().allow("").optional(),
     offererCompanyId : Joi.number().integer().min(1).required(),
-    brokerId : Joi.number().integer().min(1).required(),
-    token : Joi.string().required()
+    // brokerId : Joi.number().integer().min(1).required(),
+    // token : Joi.string().required()
 }
 
 module.exports = LoadSchema;

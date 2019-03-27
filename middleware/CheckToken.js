@@ -5,7 +5,7 @@ const tokenUtils = require("../utils/token");
 async function checkToken(ctx, next) {
   const Op = Sequelize.Op;
 
-  console.log(ctx.request.header);
+  // console.log(ctx.request.header);
 
   const token = ctx.request.header.authorization;
 

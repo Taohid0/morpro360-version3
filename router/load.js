@@ -69,36 +69,34 @@ router.get("/:id", async (ctx, next) => {
 router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
 
+  if(!ctx.UserId)
+  {
+    ctx.status = HttpStatus.OK;
+    ctx.body  = {
+      status:false,
+      errors:["Authentication failed",]
+    }
+    return;
+  }
+
   //validate data using joi package
   const validationErrors = validationUtils.isValidRequestData(data,LoadSchema);
 
   if (validationErrors) {
+    ctx.status = HttpStatus.OK;
     ctx.body = {
       status: false,
       errors: validationErrors
     };
     return;
   }
-  const { token } = data;
-  const isValidToken = await tokenValidation.checkTokenValidation(token);
-  if (!isValidToken) {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status: false,
-      errors: ["Authentication failed"]
-    };
-    return;
-  }
-  const sessionData = isValidToken.dataValues;
+
   try {
-    data.brokerId = sessionData.UserId;
+    
+    data.brokerId = ctx.UserId;
     const promise = await db.Load.create(data);
     const laodData = promise.dataValues;
 
-    //   const companyUserPromise = await db.CompanyUser.create({
-    //     UserId: sessionData.UserId,
-    //     CompanyId: companyData.id
-    //   });
     ctx.status = HttpStatus.OK;
     ctx.body = {
       status: true
