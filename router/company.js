@@ -123,7 +123,44 @@ router.post("/", async (ctx, next) => {
 });
 
 router.get("/owned-companies",async (ctx,next)=>{
-  console.log(ctx.UserId);
+  const UserId = ctx.UserId;
+  if(!UserId)
+  {
+    ctx.status = HttpStatus.OK;
+    ctx.body={
+      statue:false,
+      errors:["Authorization failed",]
+    }
+    await next();
+    return;
+  }
+    
+
+    try{
+      const Op = Sequelize.Op
+      
+      const companyIdPromise= await db.CompanyUser.findAll({where:{UserId},attributes: ["CompanyId",]});
+
+      const companyIds= companyIdPromise.map((company)=>{ return company.CompanyId});
+
+      const companies = await db.Company.findAll({where:{id:{[Op.in]:companyIds}}});
+
+      ctx.statue = HttpStatus.OK;
+      ctx.body = {
+        status:true,
+        data : companies
+      };
+    }
+    catch(err)
+    {
+      console.log(err);
+      ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      ctx.body = {
+        status:false,
+        errors:["Internal server error",]
+      }
+    }
+
   await next();
 })
 module.exports = router;

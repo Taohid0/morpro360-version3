@@ -4,6 +4,9 @@ const tokenUtils = require("../utils/token");
 
 async function checkToken(ctx, next) {
   const Op = Sequelize.Op;
+
+  console.log(ctx.request.header);
+
   const token = ctx.request.header.authorization;
 
   if (token) {
@@ -18,7 +21,7 @@ async function checkToken(ctx, next) {
 
       if (!promise) {
         tokenUtils.deleteExpiredTokens();
-        app.context.UserId = 0;
+        app.context.UserId = null;
       } 
       else 
       {
@@ -29,11 +32,11 @@ async function checkToken(ctx, next) {
     } 
     catch (err) {
       console.log(err);
-      app.context.UserId = 0;
+      app.context.UserId = null;
     }
   }
   else{
-      app.context.UserId = 0;
+      app.context.UserId = null;
   }
 
   await next();
