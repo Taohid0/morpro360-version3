@@ -47,9 +47,34 @@ router.get("/", async (ctx, next) => {
 });
 
 router.get("/:id", async (ctx, next) => {
+  const UserId = ctx.UserId;
+  console.log(UserId);
+  if (!UserId)
+  {
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status:false,
+      errors : ["Authentication failed",]
+    }
+    return;
+  }
+
   try {
     const { id } = ctx.params;
-    const promise = await db.Load.findOne({ where: { id } });
+    const promise = await db.Load.findOne({
+      include: [{
+        model: db.User,
+        as:"broker",
+        where: { id: Sequelize.col('Load.brokerId') }
+    },
+    {
+      model: db.Company,
+      as:"offererCompany",
+      where: { id: Sequelize.col('Load.offererCompanyId') }
+  }],
+      where:{id},
+    attributes: { exclude: ['pickUpAddress',"dropOffAddress"] }
+  });
 
     ctx.status = 200;
     ctx.body = {
@@ -120,8 +145,9 @@ router.post("/", async (ctx, next) => {
 });
 
 
-router.get("/available-loads",async (ctx,next)=>{
+router.get("/available-load",async (ctx,next)=>{
   const UserId = ctx.UserId;
+  console.log(UserId);
   if (!UserId)
   {
     ctx.status = HttpStatus.OK;
@@ -132,16 +158,31 @@ router.get("/available-loads",async (ctx,next)=>{
     return;
   }
   try{
-    const loadPromise = await db.Load.findAll({where:{status:"A"}});
-
+    const loadPromise = await db.Load.findAll({
+      include: [{
+        model: db.User,
+        as:"broker",
+        where: { id: Sequelize.col('Load.brokerId') }
+    },
+    {
+      model: db.Company,
+      as:"offererCompany",
+      where: { id: Sequelize.col('Load.offererCompanyId') }
+  }],
+      where:{status:"A"},
+    attributes: { exclude: ['pickUpAddress',"dropOffAddress"] }
+  });
+    console.log(loadPromise);
     ctx.status = HttpStatus.OK;
     ctx.body = {
       status:true,
       data: loadPromise
     }
+    await next();
   }
   catch(err)
   {
+    console.log(err);
     ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
     status.body = {
       status:false,
