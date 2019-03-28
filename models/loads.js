@@ -91,7 +91,7 @@ module.exports = function(sequelize, DataTypes) {
 
     "status": {
       type: DataTypes.STRING,
-      // A = Active
+      // A = Active/Available
       // P = Picked up
       // I = Inroute 
       // D = delivered

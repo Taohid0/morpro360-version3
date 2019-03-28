@@ -131,7 +131,7 @@ router.get("/owned-companies",async (ctx,next)=>{
       statue:false,
       errors:["Authorization failed",]
     }
-    await next();
+    //await next();
     return;
   }
     
@@ -145,11 +145,12 @@ router.get("/owned-companies",async (ctx,next)=>{
 
       const companies = await db.Company.findAll({where:{id:{[Op.in]:companyIds}}});
 
-      ctx.statue = HttpStatus.OK;
+      ctx.status = HttpStatus.OK;
       ctx.body = {
         status:true,
         data : companies
       };
+     await next();
     }
     catch(err)
     {
@@ -161,6 +162,5 @@ router.get("/owned-companies",async (ctx,next)=>{
       }
     }
 
-  await next();
 })
 module.exports = router;

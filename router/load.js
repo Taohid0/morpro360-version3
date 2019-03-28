@@ -119,4 +119,36 @@ router.post("/", async (ctx, next) => {
   }
 });
 
+
+router.get("/available-loads",async (ctx,next)=>{
+  const UserId = ctx.UserId;
+  if (!UserId)
+  {
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status:false,
+      errors : ["Authentication failed",]
+    }
+    return;
+  }
+  try{
+    const loadPromise = await db.Load.findAll({where:{status:"A"}});
+
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status:true,
+      data: loadPromise
+    }
+  }
+  catch(err)
+  {
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    status.body = {
+      status:false,
+      errors:["Internal server error",]
+    }
+  }
+  
+})
+
 module.exports = router;
