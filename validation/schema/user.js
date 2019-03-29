@@ -1,11 +1,13 @@
 const Joi = require("joi");
 
 const UserSchema = {
-    userName: Joi.string().alphanum().min(3).max(25).required(),
-    firstName: Joi.string().allow("").optional(),
-    lastName: Joi.string().allow("").optional(),
-    password: Joi.string().min(6).required(),
-    email: Joi.string().email({ minDomainAtoms: 2 }).required()
+    name: Joi.string().required(),
+    phone: Joi.string().required(),
+    email: Joi.string().email({ minDomainAtoms: 2 }).required(),
+    MC: Joi.number().integer().required(),
+    DOT: Joi.number().integer().required(),
+    description:Joi.string().required(),
+    password:Joi.string().required()
 };
 
 module.exports = UserSchema;

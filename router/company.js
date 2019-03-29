@@ -10,7 +10,6 @@ const tokenValidation = require("../utils/token");
 const CompanySchema = require("../validation/schema/company");
 const validationUtils = require("../validation/functions/utils");
 
-
 passport.use(
   new Strategy((username, password, cb) => {
     db.User.findOne({ where: { userName: username } }).then(user => {
@@ -43,7 +42,7 @@ router.get("/", async (ctx, next) => {
     ctx.status = 500;
     ctx.body = {
       status: false,
-      errors: ["Internal server error",]
+      errors: ["Internal server error"]
     };
   }
 });
@@ -63,7 +62,7 @@ router.get("/:id", async (ctx, next) => {
     (ctx.status = 400),
       (ctx.body = {
         status: false,
-        errors: ["Internal Server error",]
+        errors: ["Internal Server error"]
       });
   }
 });
@@ -72,7 +71,10 @@ router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
 
   //validate data using joi package
-  const validationErrors = validationUtils.isValidRequestData(data,CompanySchema);
+  const validationErrors = validationUtils.isValidRequestData(
+    data,
+    CompanySchema
+  );
 
   if (validationErrors) {
     ctx.body = {
@@ -87,7 +89,7 @@ router.post("/", async (ctx, next) => {
     ctx.status = HttpStatus.OK;
     ctx.body = {
       status: false,
-      errors: ["Authentication failed",]
+      errors: ["Authentication failed"]
     };
     return;
   }
@@ -122,45 +124,51 @@ router.post("/", async (ctx, next) => {
   }
 });
 
-router.get("/owned-companies",async (ctx,next)=>{
+router.get("/owned-companies", async (ctx, next) => {
   const UserId = ctx.UserId;
-  if(!UserId)
-  {
+  if (!UserId) {
     ctx.status = HttpStatus.OK;
-    ctx.body={
-      statue:false,
-      errors:["Authorization failed",]
-    }
+    ctx.body = {
+      statue: false,
+      errors: ["Authorization failed"]
+    };
     //await next();
     return;
   }
-    
 
-    try{
-      const Op = Sequelize.Op
-      
-      const companyIdPromise= await db.CompanyUser.findAll({where:{UserId},attributes: ["CompanyId",]});
+  try {
+    const Op = Sequelize.Op;
 
-      const companyIds= companyIdPromise.map((company)=>{ return company.CompanyId});
+    const companyIdPromise = await db.CompanyUser.findAll({
+      where: { UserId },
+      attributes: ["CompanyId"]
+    });
 
-      const companies = await db.Company.findAll({where:{id:{[Op.in]:companyIds}}});
+    const companyIds = companyIdPromise.map(company => {
+      return company.CompanyId;
+    });
 
-      ctx.status = HttpStatus.OK;
-      ctx.body = {
-        status:true,
-        data : companies
-      };
-     await next();
-    }
-    catch(err)
-    {
-      console.log(err);
-      ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-      ctx.body = {
-        status:false,
-        errors:["Internal server error",]
-      }
-    }
+    const companies = await db.Company.findAll({
+      where: { id: { [Op.in]: companyIds } }
+    });
 
-})
+    const drivers = await db.Driver.findAll({
+      where :{companyId:{[Op.in]:companyIds}}
+    });
+
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: true,
+      data: {companies,drivers},
+    };
+    await next();
+  } catch (err) {
+    console.log(err);
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    ctx.body = {
+      status: false,
+      errors: ["Internal server error"]
+    };
+  }
+});
 module.exports = router;

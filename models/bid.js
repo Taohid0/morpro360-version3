@@ -5,14 +5,13 @@ module.exports = function(sequelize, DataTypes) {
           type:DataTypes.INTEGER,
           allowNull:false
       },
-      "description":{
+      "note":{
         type: DataTypes.STRING,
         allowNull:true,
       },
       "isAssigned":{
           type:DataTypes.BOOLEAN,
           default:false,
-          allowNull:false
       }
   
   
@@ -20,8 +19,8 @@ module.exports = function(sequelize, DataTypes) {
   
        Bid.associate = function(models) {
         Bid.belongsTo(models.Load, {as:"load", allowNull:false});
-        Bid.belongsTo(models.Company,{as:"bidderCompany",allowNull:false});
-        Bid.belongsTo(models.User, {as:"bidderUser", allowNull:false});
+        // Bid.belongsTo(models.Company,{as:"bidderCompany",allowNull:false});
+        Bid.belongsTo(models.User, {as:"bidder", allowNull:false});
         Bid.belongsTo(models.Driver, {as:"driver", allowNull:false});
      };
   

@@ -67,6 +67,7 @@ router.post("/", async (ctx, next) => {
   }
   //validate data using joi package
   data.bidderUserId = UserId;
+  console.log(BidSchema);
   const validationErrors = validationUtils.isValidRequestData(data, BidSchema);
 
   if (validationErrors) {

@@ -29,15 +29,12 @@ const router = new Router({
 
 router.get("/", async (ctx, next) => {
   try {
-    const promise = await db.Load.findAll({
-      
-    });
+    const promise = await db.Load.findAll({});
     ctx.status = 200;
     ctx.body = {
       status: true,
       data: promise
     };
-    await next();
   } catch (err) {
     console.log(err);
     ctx.status = 500;
@@ -46,38 +43,58 @@ router.get("/", async (ctx, next) => {
       errors: ["Internal server error"]
     };
   }
+  await next();
+});
+
+router.get("/ok", async (ctx, next) => {
+  try {
+    const promise = await db.Load.findAll({});
+    ctx.status = 200;
+    ctx.body = {
+      status: true,
+      data: promise
+    };
+  } catch (err) {
+    console.log(err);
+    ctx.status = 500;
+    ctx.body = {
+      status: false,
+      errors: ["Internal server error"]
+    };
+  }
+  await next();
 });
 
 router.get("/:id", async (ctx, next) => {
   const UserId = ctx.UserId;
   console.log(UserId);
-  if (!UserId)
-  {
+  if (!UserId) {
     ctx.status = HttpStatus.OK;
     ctx.body = {
-      status:false,
-      errors : ["Authentication failed",]
-    }
+      status: false,
+      errors: ["Authentication failed"]
+    };
     return;
   }
 
   try {
     const { id } = ctx.params;
     const promise = await db.Load.findOne({
-      include: [{
-        model: db.User,
-        as:"broker",
-        where: { id: Sequelize.col('Load.brokerId') }
-    },
-  //   {
-  //     model: db.Company,
-  //     as:"offererCompany",
-  //     where: { id: Sequelize.col('Load.offererCompanyId') }
-  // }
-],
-      where:{id},
-    attributes: { exclude: ['pickUpAddress',"dropOffAddress"] }
-  });
+      //   include: [{
+      //     model: db.Admin,
+      //     as:"admin",
+      //     where: { id: Sequelize.col('Load.brokerId') },
+      //     attributes: { exclude: ["password",] }
+      // },
+      //   {
+      //     model: db.Company,
+      //     as:"offererCompany",
+      //     where: { id: Sequelize.col('Load.offererCompanyId') }
+      // }
+      // ],
+      where: { id },
+      attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
+    });
 
     ctx.status = 200;
     ctx.body = {
@@ -86,29 +103,29 @@ router.get("/:id", async (ctx, next) => {
     };
     await next();
   } catch (err) {
-    (ctx.status = 400),
-      (ctx.body = {
-        status: false,
-        errors: ["Internal Server error"]
-      });
+    console.log(err);
+    ctx.status = HttpStatus.Ok;
+    ctx.body = {
+      status: false,
+      errors: ["Internal Server error"]
+    };
   }
 });
 
 router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
 
-  if(!ctx.UserId)
-  {
+  if (!ctx.UserId) {
     ctx.status = HttpStatus.OK;
-    ctx.body  = {
-      status:false,
-      errors:["Authentication failed",]
-    }
+    ctx.body = {
+      status: false,
+      errors: ["Authentication failed"]
+    };
     return;
   }
 
   //validate data using joi package
-  const validationErrors = validationUtils.isValidRequestData(data,LoadSchema);
+  const validationErrors = validationUtils.isValidRequestData(data, LoadSchema);
 
   if (validationErrors) {
     ctx.status = HttpStatus.OK;
@@ -120,7 +137,7 @@ router.post("/", async (ctx, next) => {
   }
 
   try {
-    
+    //need to update this
     data.brokerId = ctx.UserId;
     const promise = await db.Load.create(data);
     const laodData = promise.dataValues;
@@ -147,53 +164,40 @@ router.post("/", async (ctx, next) => {
   }
 });
 
+router.get("/available-load", async (ctx, next) => {
 
-router.get("/available-load",async (ctx,next)=>{
-  const UserId = ctx.UserId;
-  console.log(UserId);
-  if (!UserId)
-  {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status:false,
-      errors : ["Authentication failed",]
-    }
-    return;
-  }
-  try{
+  try {
     const loadPromise = await db.Load.findAll({
-      include: [{
-        model: db.User,
-        as:"broker",
-        where: { id: Sequelize.col('Load.brokerId') }
-    },
-  //   {
-  //     model: db.Company,
-  //     as:"offererCompany",
-  //     where: { id: Sequelize.col('Load.offererCompanyId') }
-  // }
-],
-      where:{status:"A"},
-    attributes: { exclude: ['pickUpAddress',"dropOffAddress"] }
-  });
-    console.log(loadPromise);
+      include: [
+        {
+          model: db.Admin,
+          as: "broker",
+          // where: { id: Sequelize.col("Load.brokerId") }
+        }
+      ],
+      //   {
+      //     model: db.Company,
+      //     as:"offererCompany",
+      //     where: { id: Sequelize.col('Load.offererCompanyId') }
+      // }
+
+      where: { status: "A" },
+      attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
+    });
     ctx.status = HttpStatus.OK;
     ctx.body = {
-      status:true,
+      status: true,
       data: loadPromise
-    }
-    await next();
-  }
-  catch(err)
-  {
+    };
+  } catch (err) {
     console.log(err);
     ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
     status.body = {
-      status:false,
-      errors:["Internal server error",]
-    }
+      status: false,
+      errors: ["Internal server error"]
+    };
   }
-  
-})
+  await next();
+});
 
 module.exports = router;

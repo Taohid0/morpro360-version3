@@ -8,7 +8,6 @@ const tokenValidation = require("../utils/token");
 const DriverSchema = require("../validation/schema/driver");
 const validationUtils = require("../validation/functions/utils");
 
-
 passport.use(
   new Strategy((username, password, cb) => {
     db.User.findOne({ where: { userName: username } }).then(user => {
@@ -38,10 +37,10 @@ router.get("/", async (ctx, next) => {
     await next();
   } catch (err) {
     console.log(err);
-    ctx.status = 500;
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
     ctx.body = {
       status: false,
-      errors: ["Internal server error",]
+      errors: ["Internal server error"]
     };
   }
 });
@@ -49,7 +48,7 @@ router.get("/", async (ctx, next) => {
 router.get("/:id", async (ctx, next) => {
   try {
     const { id } = ctx.params;
-    const promise = await db.driver.findOne({ where: { id } });
+    const promise = await db.Driver.findOne({ where: { id } });
 
     ctx.status = 200;
     ctx.body = {
@@ -58,11 +57,12 @@ router.get("/:id", async (ctx, next) => {
     };
     await next();
   } catch (err) {
-    (ctx.status = 400),
-      (ctx.body = {
+    console.log(err);
+    ctx.status = 400,
+      ctx.body = {
         status: false,
-        errors: ["Internal Server error",]
-      });
+        errors: ["Internal Server error"]
+      };
   }
 });
 
@@ -70,7 +70,10 @@ router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
 
   //validate data using joi package
-  const validationErrors = validationUtils.isValidRequestData(data,DriverSchema);
+  const validationErrors = validationUtils.isValidRequestData(
+    data,
+    DriverSchema
+  );
 
   if (validationErrors) {
     ctx.body = {
@@ -85,7 +88,7 @@ router.post("/", async (ctx, next) => {
     ctx.status = HttpStatus.OK;
     ctx.body = {
       status: false,
-      errors: ["Authentication failed",]
+      errors: ["Authentication failed"]
     };
     return;
   }
@@ -114,6 +117,50 @@ router.post("/", async (ctx, next) => {
       errors
     };
   }
+});
+
+router.get("/company-drivers", async (ctx, next) => {
+  const userId = ctx.UserId;
+  if (!userId) {
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: false,
+      errors: ["Authentication failes"]
+    };
+    return;
+  }
+  try {
+    const loadPromise = await db.Driver.findAll({
+      // include: [
+      //   {
+      //     model: db.Admin,
+      //     as: "broker"
+          // where: { id: Sequelize.col("Load.brokerId") }
+      //   }
+      // ],
+      //   {
+      //     model: db.Company,
+      //     as:"offererCompany",
+      //     where: { id: Sequelize.col('Load.offererCompanyId') }
+      // }
+
+      where: { userId },
+      // attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
+    });
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: true,
+      data: loadPromise
+    };
+  } catch (err) {
+    console.log(err);
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    status.body = {
+      status: false,
+      errors: ["Internal server error"]
+    };
+  }
+  await next();
 });
 
 module.exports = router;

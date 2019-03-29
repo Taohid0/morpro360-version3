@@ -4,26 +4,18 @@ var bcrypt = require("bcrypt-nodejs");
 // Creating our User model
 module.exports = function(sequelize, DataTypes) {
   var User = sequelize.define("User", {
-
-    "firstName":{
+    "name":{
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull:false,
+      unique: true
     },
-
-    "lastName":{
-      type: DataTypes.STRING,
-      allowNull: true
+    "phone": {
+      type:DataTypes.STRING,
+      allowNull:false,
+      unique:true
     },
-
-    "userName":{
-      type: DataTypes.STRING,
-      allowNull: true,
-      unique: false,
-      validate: {
-        isAlphanumeric: true
-      }
-    },
-
+    //MC#:
+    //DOT#
     // The email cannot be null, and must be a proper email before creation
     "email": {
       type: DataTypes.STRING,
@@ -32,6 +24,25 @@ module.exports = function(sequelize, DataTypes) {
       validate: {
         isEmail: true
       }
+    },
+    "MC": {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: true,
+     
+    },
+    "DOT": {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: true,
+     
+    },
+    //what is payment here?
+    //"payment": DataTypes.STRING,
+    //"Notes": DataTypes.STRING
+    "description":{
+      type:DataTypes.STRING,
+      allowNull:false,
     },
     // The password cannot be null
     "password": {
@@ -45,8 +56,8 @@ module.exports = function(sequelize, DataTypes) {
     // When an Author is deleted, also delete any associated Posts
         // User.belongsToMany(models.Role, {through:'UserRole'});
         // User.belongsToMany(models.Loads, {through:'LoadsUser'});
-        User.hasMany(models.Ratings, {as:'UserRatings'});
-        User.hasMany(models.Expenses, {as:'UserExpenses'});
+        // User.hasMany(models.Ratings, {as:'UserRatings'});
+        // User.hasMany(models.Expenses, {as:'UserExpenses'});
         // User.belongsToMany(models.Company, {through: 'CompanyUser', foreignKey: 'UserId' });
     };
   // Creating a custom method for our User model. This will check if an unhashed password entered by the user can be compared to the hashed password stored in our database

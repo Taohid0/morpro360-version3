@@ -34,10 +34,10 @@ module.exports = function(sequelize, DataTypes) {
       type:DataTypes.STRING,
       allowNull:false
     },
-    "driverStatus": {
-      type:DataTypes.STRING,
-      allowNull:true
-    },
+    // "driverStatus": {
+    //   type:DataTypes.STRING,
+    //   allowNull:true
+    // },
 
     "productDetails":{
       type:DataTypes.STRING,
@@ -111,12 +111,12 @@ module.exports = function(sequelize, DataTypes) {
      //Loads.belongsTo(models.Address,{as:'loadAdress', foreignKey:'AddressId'}  );
 
     //  Loads.belongsTo(models.Company,{as:"offererCompany",allowNull:false});
-     Loads.belongsTo(models.User,{as:"broker",allowNull:false});
+     Loads.belongsTo(models.Admin,{as:"broker",allowNull:false});
 
-     Loads.belongsTo(models.Company,{as:"assignedCompany",allowNull:true});
-     Loads.belongsTo(models.User,{as:"assignedUser",allowNull:true});
+    //  Loads.belongsTo(models.Company,{as:"assignedCompany",allowNull:true});
+    //  Loads.belongsTo(models.User,{as:"assignedUser",allowNull:true});
 
-     Loads.belongsTo(models.Driver,{as:"assignedDriver",allowNull:true});
+    //  Loads.belongsTo(models.Driver,{as:"assignedDriver",allowNull:true});
      // Loads.belongsToMany(models.Address, {through:'LoadsUser'});
      // Loads.belongsToMany(models.Address, {through:'LoadAdress'});
 
