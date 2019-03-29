@@ -22,6 +22,7 @@ module.exports = function(sequelize, DataTypes) {
         Bid.belongsTo(models.Load, {as:"load", allowNull:false});
         Bid.belongsTo(models.Company,{as:"bidderCompany",allowNull:false});
         Bid.belongsTo(models.User, {as:"bidderUser", allowNull:false});
+        Bid.belongsTo(models.Driver, {as:"driver", allowNull:false});
      };
   
   
