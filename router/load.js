@@ -29,7 +29,9 @@ const router = new Router({
 
 router.get("/", async (ctx, next) => {
   try {
-    const promise = await db.Load.findAll({});
+    const promise = await db.Load.findAll({
+      
+    });
     ctx.status = 200;
     ctx.body = {
       status: true,
@@ -67,11 +69,12 @@ router.get("/:id", async (ctx, next) => {
         as:"broker",
         where: { id: Sequelize.col('Load.brokerId') }
     },
-    {
-      model: db.Company,
-      as:"offererCompany",
-      where: { id: Sequelize.col('Load.offererCompanyId') }
-  }],
+  //   {
+  //     model: db.Company,
+  //     as:"offererCompany",
+  //     where: { id: Sequelize.col('Load.offererCompanyId') }
+  // }
+],
       where:{id},
     attributes: { exclude: ['pickUpAddress',"dropOffAddress"] }
   });
@@ -164,11 +167,12 @@ router.get("/available-load",async (ctx,next)=>{
         as:"broker",
         where: { id: Sequelize.col('Load.brokerId') }
     },
-    {
-      model: db.Company,
-      as:"offererCompany",
-      where: { id: Sequelize.col('Load.offererCompanyId') }
-  }],
+  //   {
+  //     model: db.Company,
+  //     as:"offererCompany",
+  //     where: { id: Sequelize.col('Load.offererCompanyId') }
+  // }
+],
       where:{status:"A"},
     attributes: { exclude: ['pickUpAddress',"dropOffAddress"] }
   });
