@@ -110,7 +110,7 @@ module.exports = function(sequelize, DataTypes) {
      //I didn't get why this relation is needed
      //Loads.belongsTo(models.Address,{as:'loadAdress', foreignKey:'AddressId'}  );
 
-     Loads.belongsTo(models.Company,{as:"offererCompany",allowNull:false});
+    //  Loads.belongsTo(models.Company,{as:"offererCompany",allowNull:false});
      Loads.belongsTo(models.User,{as:"broker",allowNull:false});
 
      Loads.belongsTo(models.Company,{as:"assignedCompany",allowNull:true});
