@@ -11,5 +11,5 @@ $ cd morpro360-version3
 $ npm install
 
 
-### run dev server (if the backend server is running at port 3000 then run this at any other port like 3001/3002 etc)
+### run dev server 
 $ node server.js

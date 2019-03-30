@@ -7,7 +7,7 @@ const CheckToken = require("./middleware/CheckToken");
 app = new Koa();
 
 // Setting up port and requiring models for syncing
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 3001;
 var db = require("./models");
 
 const userRouter = require("./router/user");
