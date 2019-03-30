@@ -45,17 +45,20 @@ router.get("/:id", async (ctx, next) => {
     };
     await next();
   } catch (err) {
-    (ctx.status = 400),
-      (ctx.body = {
+    console.log(err);
+    ctx.status = 400,
+      ctx.body = {
         status: false,
         errors: ["Internal Server error"]
-      });
+      };
   }
 });
 
 router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
   const UserId = ctx.UserId;
+  console.log("request " ,data);
+  console.log(UserId);
 
   if (!UserId) {
     ctx.status = HttpStatus.OK;
@@ -66,8 +69,7 @@ router.post("/", async (ctx, next) => {
     return;
   }
   //validate data using joi package
-  data.bidderUserId = UserId;
-  console.log(BidSchema);
+  data.bidderId = UserId;
   const validationErrors = validationUtils.isValidRequestData(data, BidSchema);
 
   if (validationErrors) {
@@ -111,5 +113,62 @@ router.post("/", async (ctx, next) => {
     };
   }
 });
+
+router.get("/my-bids", async (ctx, next) => {
+  const Op = Sequelize.Op;
+
+  const UserId = ctx.UserId;
+  if (!UserId)
+  {
+    ctx.status = HttpStatus.Ok;
+    ctx.body = {
+      status:false,
+      errors : ["Authentication failed",]
+    }
+    return;
+  }
+
+  try {
+
+    const bidPromise = await db.Bid.findAll({
+      where:{bidderId:UserId},  
+      include:[
+        {
+          model:db.Load,
+          as:"load",
+          attributes:{exclude:["pickUpaddress","dropOffaddress"]}
+        },
+        {
+          model:db.Driver,
+          as:"driver",
+          //attributes:{exclude:["pickUpaddress","dropOffaddress"]}
+        },
+        {
+          model:db.User,
+          as:"bidder",
+          attributes:{exclude:["password"]}
+        }
+      ],
+      // attributes:{exclude:["isAssigned",]}
+      
+    });
+
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: true,
+      data: bidPromise
+    };
+  } catch (err) {
+    console.log(err);
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    status.body = {
+      status: false,
+      errors: ["Internal server error"]
+    };
+  }
+  await next();
+});
+
+
 
 module.exports = router;

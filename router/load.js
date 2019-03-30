@@ -114,7 +114,7 @@ router.get("/:id", async (ctx, next) => {
 
 router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
-
+  
   if (!ctx.UserId) {
     ctx.status = HttpStatus.OK;
     ctx.body = {
@@ -165,8 +165,29 @@ router.post("/", async (ctx, next) => {
 });
 
 router.get("/available-load", async (ctx, next) => {
+  const Op = Sequelize.Op;
+
+  const UserId = ctx.UserId;
+  if (!UserId)
+  {
+    ctx.status = HttpStatus.Ok;
+    ctx.body = {
+      status:false,
+      errors : ["Authentication failed",]
+    }
+    return;
+  }
 
   try {
+
+    const bidPromise = await db.Bid.findAll({
+      where:{bidderId:UserId},
+      attributes:["loadId"]
+    });
+    const loadIds = bidPromise.map(bid=>{
+      return bid.id;
+    })
+    console.log(loadIds);
     const loadPromise = await db.Load.findAll({
       include: [
         {
@@ -175,13 +196,9 @@ router.get("/available-load", async (ctx, next) => {
           // where: { id: Sequelize.col("Load.brokerId") }
         }
       ],
-      //   {
-      //     model: db.Company,
-      //     as:"offererCompany",
-      //     where: { id: Sequelize.col('Load.offererCompanyId') }
-      // }
-
-      where: { status: "A" },
+     
+      where: { status: "A",
+      id:{[Op.notIn]:loadIds}},
       attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
     ctx.status = HttpStatus.OK;
