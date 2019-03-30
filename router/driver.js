@@ -67,8 +67,20 @@ router.get("/:id", async (ctx, next) => {
 });
 
 router.post("/", async (ctx, next) => {
+  const UserId = ctx.UserId;
+  
+  if(!UserId)
+  {
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status:false,
+      errors:["Authentication failed",]
+    }
+    await next();
+    return;
+  }
   const data = ctx.request.body;
-
+  data.userId = UserId;
   //validate data using joi package
   const validationErrors = validationUtils.isValidRequestData(
     data,
@@ -82,19 +94,8 @@ router.post("/", async (ctx, next) => {
     };
     return;
   }
-  const { token } = data;
-  const isValidToken = await tokenValidation.checkTokenValidation(token);
-  if (!isValidToken) {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status: false,
-      errors: ["Authentication failed"]
-    };
-    return;
-  }
-  const sessionData = isValidToken.dataValues;
+
   try {
-    data.accountCreatorId = sessionData.UserId;
     const promise = await db.Driver.create(data);
 
     ctx.status = HttpStatus.OK;

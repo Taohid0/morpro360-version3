@@ -93,4 +93,36 @@ router.post("/login", async (ctx,next)=>{
     await next();
 });
 
+router.post("/logout", async (ctx,next)=>{
+    const UserId = ctx.UserId;
+    if (!UserId)
+    {
+        ctx.status = HttpStatus.OK;
+        ctx.body = {
+            status:false,
+            errors:["Authentication failed",]
+        }
+        await next();
+        return;
+    }
+    try{
+        const promise = await db.Session.destroy({
+            where:{UserId}
+        });
+        ctx.status = HttpStatus.OK;
+        ctx.body = {
+            status:true
+        }
+    }
+    catch(err)
+    {
+        console.log(err);
+        ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ctx.body = {
+            status:false,
+            errors:["Internal server error",]
+        }
+    }
+})
+
 module.exports = router;
