@@ -8,8 +8,9 @@ const DriverSchema = {
     city: Joi.string().required(),
     address : Joi.string().required(),
     license : Joi.string().required(),
-    // token : Joi.string().required(),
+    password:Joi.string().required(),
     userId: Joi.number().integer().min(1).required(),
+    
 }
 
 module.exports = DriverSchema;

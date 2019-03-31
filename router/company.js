@@ -59,11 +59,12 @@ router.get("/:id", async (ctx, next) => {
     };
     await next();
   } catch (err) {
-    (ctx.status = 400),
-      (ctx.body = {
+    console.log(err);
+    ctx.status = 400,
+      ctx.body = {
         status: false,
         errors: ["Internal Server error"]
-      });
+      };
   }
 });
 
