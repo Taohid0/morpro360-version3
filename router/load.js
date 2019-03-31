@@ -178,6 +178,18 @@ router.get("/available-load", async (ctx, next) => {
     return;
   }
 
+  if(!ctx.active)
+  {
+    ctx.status = HttpStatus.OK;
+    ctx.body = 
+    {
+      status:false,
+      errors:["You account is not active yet. You'll see the load boards when it's active.",]
+    }
+    return;
+  }
+ 
+
   try {
 
     const bidPromise = await db.Bid.findAll({
@@ -185,7 +197,7 @@ router.get("/available-load", async (ctx, next) => {
       attributes:["loadId"]
     });
     const loadIds = bidPromise.map(bid=>{
-      return bid.id;
+      return bid.loadId;
     })
     console.log(loadIds);
     const loadPromise = await db.Load.findAll({

@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
       },
       "isAssigned":{
           type:DataTypes.BOOLEAN,
-          default:false,
+          defaultValue:false,
       }
   
   

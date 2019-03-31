@@ -14,28 +14,40 @@ async function checkToken(ctx, next) {
     thresholdTime.setHours(thresholdTime.getHours() - 24);
     
     try {
-      const promise = await db.Session.findOne({
+      const promise = await db.Session.findOne({include: [
+        {
+          model: db.User,
+    
+        }
+      ],
+      //raw:true,
         where: { token, updatedAt: { [Op.gt]: thresholdTime } }
       });
+      
+      const user = promise.dataValues.User.dataValues;
 
       if (!promise) {
         // tokenUtils.deleteExpiredTokens();
         app.context.UserId = null;
+        app.context.active = 0;
       } 
       else 
       {
         promise.changed("updatedAt", true);
         promise.save();
         app.context.UserId = promise.dataValues.UserId;
+        app.context.active = user.active;
       }
     } 
     catch (err) {
       console.log(err);
       app.context.UserId = null;
+      app.context.active = 0;
     }
   }
   else{
       app.context.UserId = null;
+      app.context.active = 0;
   }
  
 

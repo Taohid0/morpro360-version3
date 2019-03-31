@@ -57,10 +57,11 @@ router.get("/:id", async (ctx, next) => {
 router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
   const UserId = ctx.UserId;
+  const active = ctx.active;
   console.log("request " ,data);
   console.log(UserId);
 
-  if (!UserId) {
+  if (!UserId || !active) {
     ctx.status = HttpStatus.OK;
     ctx.body = {
       status: false,
