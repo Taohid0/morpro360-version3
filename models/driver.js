@@ -1,3 +1,5 @@
+var bcrypt = require("bcrypt-nodejs");
+
 module.exports = function(sequelize, DataTypes) {
   var Driver = sequelize.define("Driver", {
     name: {
@@ -48,6 +50,17 @@ module.exports = function(sequelize, DataTypes) {
     // Driver.belongsTo(models.Company,{as:"company",allowNull:false});
     Driver.belongsTo(models.User, { as: "user", allowNull: false });
   };
+  Driver.addHook("beforeCreate", function(driver) {
+    driver.password = bcrypt.hashSync(driver.password, bcrypt.genSaltSync(10), null);
+    console.log("Hooked before create");
+  });
 
+  Driver.addHook("beforeUpdate", function(driver) {
+    console.log("Hooked after update");
+    if(!!driver.password) {
+      driver.password = bcrypt.hashSync(driver.password, bcrypt.genSaltSync(10), null);
+      console.log(driver);
+    }
+  });
   return Driver;
 };
