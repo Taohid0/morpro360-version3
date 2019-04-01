@@ -5,7 +5,7 @@ const HttpStatus = require("http-status-codes");
 
 const db = require("../models");
 const tokenValidation = require("../utils/token");
-const DriverSchema = require("../validation/schema/driver");
+const AdminSchema = require("../validation/schema/admin");
 const validationUtils = require("../validation/functions/utils");
 
 // passport.use(
@@ -23,13 +23,15 @@ const validationUtils = require("../validation/functions/utils");
 // );
 
 const router = new Router({
-  prefix: "/driver"
+  prefix: "/admin"
 });
 
 router.get("/", async (ctx, next) => {
   try {
-    const promise = await db.Driver.findAll({});
-    ctx.status = HttpStatus.OK;
+    const promise = await db.Admin.findAll({
+        attributes: { exclude: ["password",] }
+    });
+    ctx.status = HttpStatus.Ok;
     ctx.body = {
       status: true,
       data: promise
@@ -48,9 +50,10 @@ router.get("/", async (ctx, next) => {
 router.get("/:id", async (ctx, next) => {
   try {
     const { id } = ctx.params;
-    const promise = await db.Driver.findOne({ where: { id } });
+    const promise = await db.Admin.findOne({ where: { id },
+        attributes: { exclude: ["password",] } });
 
-    ctx.status = 200;
+    ctx.status = HttpStatus.OK;
     ctx.body = {
       status: true,
       data: promise
@@ -58,7 +61,7 @@ router.get("/:id", async (ctx, next) => {
     await next();
   } catch (err) {
     console.log(err);
-    ctx.status = 400,
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR,
       ctx.body = {
         status: false,
         errors: ["Internal Server error"]
@@ -67,11 +70,13 @@ router.get("/:id", async (ctx, next) => {
 });
 
 router.post("/", async (ctx, next) => {
-  const UserId = ctx.UserId;
+  const isAdmin = ctx.isAdmin;
+  const role = ctx.role || "";
   
-  if(!UserId)
+  if(!isAdmin || !(role.toLowerCase="admin"))
   {
-    ctx.status = HttpStatus.OK;
+    ctx.status = HttpStatus.UNAUTHORIZED;
+
     ctx.body = {
       status:false,
       errors:["Authentication failed",]
@@ -80,12 +85,11 @@ router.post("/", async (ctx, next) => {
     return;
   }
   const data = ctx.request.body;
-  data.userId = UserId;
+
   //validate data using joi package
   const validationErrors = validationUtils.isValidRequestData(
     data,
-    DriverSchema
-  );
+    AdminSchema);
 
   if (validationErrors) {
     ctx.body = {
@@ -96,8 +100,10 @@ router.post("/", async (ctx, next) => {
   }
 
   try {
-    const promise = await db.Driver.create(data);
+    console.log("line 103, this will be added soon");
+    const promise = await db.Admin.create(data);
 
+    const rolePromise = await db.AdminRole.create({})
     ctx.status = HttpStatus.OK;
     ctx.body = {
       status: true
@@ -146,7 +152,7 @@ router.get("/company-drivers", async (ctx, next) => {
       // }
 
       where: { userId },
-      attributes: { exclude: ["password",] }
+      // attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
     ctx.status = HttpStatus.OK;
     ctx.body = {

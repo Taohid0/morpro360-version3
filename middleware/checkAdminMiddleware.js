@@ -43,6 +43,7 @@ async function checkAdminMiddleware(ctx, next) {
       adminSession.save();
       app.context.isAdmin = true;
       app.context.role = role.name;
+      app.context.AdminId = adminSession.AdminId;
     } catch (err) {
       console.log(err);
       app.context.isAdmin = false;

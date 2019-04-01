@@ -4,6 +4,8 @@ const Logger = require("koa-logger");
 const passport = require('koa-passport');
 const cors = require('koa-cors');
 const checkUserMiddleware = require("./middleware/checkUserMiddleware");
+const checkAdminMiddleware = require("./middleware/checkAdminMiddleware");
+
 app = new Koa();
 
 // Setting up port and requiring models for syncing
@@ -23,6 +25,7 @@ app.use(Logger());
 app.use(cors());
 //need to ask masnun vai
 app.use(checkUserMiddleware);
+app.use(checkAdminMiddleware);
 
 app.use(userRouter.routes()).use(userRouter.allowedMethods());
 app.use(authRouter.routes()).use(authRouter.allowedMethods());
