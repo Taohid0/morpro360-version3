@@ -3,7 +3,7 @@ const BodyParser = require("koa-bodyparser");
 const Logger = require("koa-logger");
 const passport = require('koa-passport');
 const cors = require('koa-cors');
-const CheckToken = require("./middleware/CheckToken");
+const checkUserMiddleware = require("./middleware/checkUserMiddleware");
 app = new Koa();
 
 // Setting up port and requiring models for syncing
@@ -22,7 +22,7 @@ app.use(BodyParser());
 app.use(Logger());
 app.use(cors());
 //need to ask masnun vai
-app.use(CheckToken);
+app.use(checkUserMiddleware);
 
 app.use(userRouter.routes()).use(userRouter.allowedMethods());
 app.use(authRouter.routes()).use(authRouter.allowedMethods());

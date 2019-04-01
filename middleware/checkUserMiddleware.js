@@ -2,7 +2,7 @@ const db = require("../models");
 const Sequelize = require("sequelize");
 const tokenUtils = require("../utils/token");
 
-async function checkToken(ctx, next) {
+async function checkUserMiddleware(ctx, next) {
   const Op = Sequelize.Op;
 
 
@@ -55,4 +55,4 @@ async function checkToken(ctx, next) {
 
 }
 
-module.exports = checkToken;
+module.exports = checkUserMiddleware;

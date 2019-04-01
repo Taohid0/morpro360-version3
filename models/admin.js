@@ -4,7 +4,12 @@ var bcrypt = require("bcrypt-nodejs");
 // Creating our Admin model
 module.exports = function(sequelize, DataTypes) {
   var Admin = sequelize.define("Admin", {
-    "name":{
+    "firstName":{
+      type: DataTypes.STRING,
+      allowNull:false,
+      unique: true
+    },
+    "lastName":{
       type: DataTypes.STRING,
       allowNull:false,
       unique: true
