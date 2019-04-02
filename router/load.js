@@ -9,19 +9,19 @@ const tokenValidation = require("../utils/token");
 const LoadSchema = require("../validation/schema/load");
 const validationUtils = require("../validation/functions/utils");
 
-passport.use(
-  new Strategy((username, password, cb) => {
-    db.User.findOne({ where: { userName: username } }).then(user => {
-      if (!user) {
-        return cb(null, false);
-      }
-      if (!user.validPassword(password)) {
-        return cb(null, false);
-      }
-      return cb(null, user);
-    });
-  })
-);
+// passport.use(
+//   new Strategy((username, password, cb) => {
+//     db.User.findOne({ where: { userName: username } }).then(user => {
+//       if (!user) {
+//         return cb(null, false);
+//       }
+//       if (!user.validPassword(password)) {
+//         return cb(null, false);
+//       }
+//       return cb(null, user);
+//     });
+//   })
+// );
 
 const router = new Router({
   prefix: "/load"
@@ -46,24 +46,6 @@ router.get("/", async (ctx, next) => {
   await next();
 });
 
-router.get("/ok", async (ctx, next) => {
-  try {
-    const promise = await db.Load.findAll({});
-    ctx.status = 200;
-    ctx.body = {
-      status: true,
-      data: promise
-    };
-  } catch (err) {
-    console.log(err);
-    ctx.status = 500;
-    ctx.body = {
-      status: false,
-      errors: ["Internal server error"]
-    };
-  }
-  await next();
-});
 
 router.get("/:id", async (ctx, next) => {
   const UserId = ctx.UserId;
@@ -138,7 +120,7 @@ router.post("/", async (ctx, next) => {
 
   try {
     //need to update this
-    data.brokerId = ctx.UserId;
+    data.adminId = ctx.UserId;
     const promise = await db.Load.create(data);
     const laodData = promise.dataValues;
 

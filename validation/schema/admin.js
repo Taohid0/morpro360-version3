@@ -6,7 +6,7 @@ const AdminSchema = {
     phone: Joi.string().required(),
     email: Joi.string().email({ minDomainAtoms: 2 }).required(),
     password:Joi.string().required(),
-    roleId : Joi.number().integer().min(1).required()
+    RoleId : Joi.number().integer().min(1).required()
 };
 
-module.exports = UserSchema;
+module.exports = AdminSchema;

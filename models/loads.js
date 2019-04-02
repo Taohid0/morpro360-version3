@@ -111,7 +111,7 @@ module.exports = function(sequelize, DataTypes) {
      //Loads.belongsTo(models.Address,{as:'loadAdress', foreignKey:'AddressId'}  );
 
     //  Loads.belongsTo(models.Company,{as:"offererCompany",allowNull:false});
-     Loads.belongsTo(models.Admin,{as:"broker",allowNull:false});
+     Loads.belongsTo(models.Admin,{as:"admin",allowNull:false});
 
     //  Loads.belongsTo(models.Company,{as:"assignedCompany",allowNull:true});
     //  Loads.belongsTo(models.User,{as:"assignedUser",allowNull:true});

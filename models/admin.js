@@ -7,12 +7,10 @@ module.exports = function(sequelize, DataTypes) {
     "firstName":{
       type: DataTypes.STRING,
       allowNull:false,
-      unique: true
     },
     "lastName":{
       type: DataTypes.STRING,
       allowNull:false,
-      unique: true
     },
     "phone": {
       type:DataTypes.STRING,
@@ -40,7 +38,7 @@ module.exports = function(sequelize, DataTypes) {
     Admin.associate = function(models) {
     // Associating Author with Posts
     // When an Author is deleted, also delete any associated Posts
-        // Admin.belongsToMany(models.Role, {through:'AdminRole'});
+        Admin.belongsTo(models.Role, {through:'role'});
         // Admin.belongsToMany(models.Loads, {through:'LoadsAdmin'});
         // Admin.hasMany(models.Ratings, {as:'AdminRatings'});
         // Admin.hasMany(models.Expenses, {as:'AdminExpenses'});

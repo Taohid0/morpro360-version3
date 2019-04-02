@@ -5,6 +5,7 @@ async function checkAdminMiddleware(ctx, next) {
   const Op = Sequelize.Op;
 
   const token = ctx.request.header.authorization;
+  console.log("token", token);
 
   if (token) {
     //check whether the token is expired (expiration time : 24 hours)
@@ -15,35 +16,30 @@ async function checkAdminMiddleware(ctx, next) {
       const promise = await db.AdminSession.findOne({
         include: [
           {
-            model: db.Admin
+            model: db.Admin,
+            include: {
+              model: db.Role
+            }
           }
         ],
-        //raw:true,
+        // raw:true,
         where: { token, updatedAt: { [Op.gt]: thresholdTime } }
       });
 
-      const adminSession = promise.dataValues.Admin.dataValues;
       if (!promise) {
         app.context.isAdmin = false;
         await next();
         return;
       }
-      const adminRole = await db.AdminRole.findOne({
-        include: [
-          {
-            model: db.Role
-          }
-        ],
-        where: { adminId: adminSession.AdminId }
-      });
+      console.log();
+      const role = promise.dataValues.Admin.dataValues.Role.name;
 
-      const role = adminRole.dataValues.Role.dataValues;
+      promise.changed("updatedAt", true);
+      promise.save();
 
-      adminSession.changed("updatedAt", true);
-      adminSession.save();
       app.context.isAdmin = true;
-      app.context.role = role.name;
-      app.context.AdminId = adminSession.AdminId;
+      app.context.role = role;
+      app.context.AdminId = promise.AdminId;
     } catch (err) {
       console.log(err);
       app.context.isAdmin = false;
@@ -55,4 +51,4 @@ async function checkAdminMiddleware(ctx, next) {
   await next();
 }
 
-module.exports = checkUserMiddleware;
+module.exports = checkAdminMiddleware;

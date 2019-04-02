@@ -31,7 +31,7 @@ router.get("/", async (ctx, next) => {
     const promise = await db.Admin.findAll({
         attributes: { exclude: ["password",] }
     });
-    ctx.status = HttpStatus.Ok;
+    ctx.status = HttpStatus.OK;
     ctx.body = {
       status: true,
       data: promise
@@ -73,7 +73,7 @@ router.post("/", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
   const role = ctx.role || "";
   
-  if(!isAdmin || !(role.toLowerCase="admin"))
+  if(!isAdmin || !(role.toLowerCase()==="admin"))
   {
     ctx.status = HttpStatus.UNAUTHORIZED;
 
@@ -100,10 +100,9 @@ router.post("/", async (ctx, next) => {
   }
 
   try {
-    console.log("line 103, this will be added soon");
     const promise = await db.Admin.create(data);
-
-    const rolePromise = await db.AdminRole.create({})
+    console.log(data);
+    // const rolePromise = await db.AdminRole.create({})
     ctx.status = HttpStatus.OK;
     ctx.body = {
       status: true

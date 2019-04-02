@@ -10,19 +10,19 @@ const tokenValidation = require("../utils/token");
 const CompanySchema = require("../validation/schema/company");
 const validationUtils = require("../validation/functions/utils");
 
-passport.use(
-  new Strategy((username, password, cb) => {
-    db.User.findOne({ where: { userName: username } }).then(user => {
-      if (!user) {
-        return cb(null, false);
-      }
-      if (!user.validPassword(password)) {
-        return cb(null, false);
-      }
-      return cb(null, user);
-    });
-  })
-);
+// passport.use(
+//   new Strategy((username, password, cb) => {
+//     db.User.findOne({ where: { userName: username } }).then(user => {
+//       if (!user) {
+//         return cb(null, false);
+//       }
+//       if (!user.validPassword(password)) {
+//         return cb(null, false);
+//       }
+//       return cb(null, user);
+//     });
+//   })
+// );
 
 const router = new Router({
   prefix: "/company"
@@ -172,4 +172,62 @@ router.get("/owned-companies", async (ctx, next) => {
     };
   }
 });
+
+router.get("/pending-companies", async (ctx, next) => {
+  const isAdmin = ctx.isAdmin;
+  const role = ctx.role;
+  const AdminId = ctx.AdminId;
+
+  if(!isAdmin)
+  {
+    ctx.status = HttpStatus.OK;
+    ctx.body //this will be added soon
+  }
+
+  if (!UserId) {
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      statue: false,
+      errors: ["Authorization failed"]
+    };
+    //await next();
+    return;
+  }
+
+  try {
+    const Op = Sequelize.Op;
+
+    const companyIdPromise = await db.CompanyUser.findAll({
+      where: { UserId },
+      attributes: ["CompanyId"]
+    });
+
+    const companyIds = companyIdPromise.map(company => {
+      return company.CompanyId;
+    });
+
+    const companies = await db.Company.findAll({
+      where: { id: { [Op.in]: companyIds } }
+    });
+
+    const drivers = await db.Driver.findAll({
+      where :{companyId:{[Op.in]:companyIds}}
+    });
+
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: true,
+      data: {companies,drivers},
+    };
+    await next();
+  } catch (err) {
+    console.log(err);
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    ctx.body = {
+      status: false,
+      errors: ["Internal server error"]
+    };
+  }
+});
+
 module.exports = router;
