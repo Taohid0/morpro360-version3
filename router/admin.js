@@ -7,7 +7,7 @@ const db = require("../models");
 const tokenValidation = require("../utils/token");
 const AdminSchema = require("../validation/schema/admin");
 const validationUtils = require("../validation/functions/utils");
-
+const ctxHelper = require("../helper/ctxHelper");
 // passport.use(
 //   new Strategy((username, password, cb) => {
 //     db.User.findOne({ where: { userName: username } }).then(user => {
@@ -25,11 +25,95 @@ const validationUtils = require("../validation/functions/utils");
 const router = new Router({
   prefix: "/admin"
 });
+//admin login router using email and password
+router.post("/login", async (ctx, next) => {
+  const data = ctx.request.body;
+  const email = data.email;
+  const password = data.password;
+
+  //if email or password not present return error
+  if (!email || !password) {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
+      status: false,
+      errors: ["email or password cannot be blank"]
+    });
+    await next();
+    return;
+  }
+
+  //find admin using email
+  const promise = await db.Admin.findOne({ where: { email: email } });
+  //if no user found return error
+  if (!promise) {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
+      status: false,
+      errors: ["user not found"]
+    });
+    await next();
+    return;
+  }
+
+  const adminData = promise.dataValues;
+
+  //compare password using bcrypt package
+  const isAuthencated = bcrypt.compareSync(
+    ctx.request.body.password,
+    adminData.password
+  );
+  //if password mismatched return error
+  if (!isAuthencated) {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
+      status: false,
+      errors: ["email/password mismatched"]
+    });
+    await next();
+    return;
+  }
+
+  const existingToken = await tokenValidation.isAdminTokenExists(email);
+
+  if (existingToken) {
+    adminData.token = existingToken.dataValues.token;
+
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: true,
+      data: adminData
+    };
+    await next();
+    return;
+  }
+
+  //generate hash string using email and password
+  const hashString = userUtils.getHash(email, password);
+  //create session data to session table
+  const sessionPromise = await db.AdminSession.create({
+    token: hashString,
+    UserId: promise.dataValues.id
+  });
+
+  const sessionData = sessionPromise.dataValues;
+
+  //delete password from user data
+  delete userData.password;
+
+  userData.token = sessionData.token;
+
+  //set status and response for successful request
+  ctx.status = HttpStatus.OK;
+  ctx.body = {
+    status: true,
+    data: userData
+  };
+
+  //call next middleware
+  await next();
+});
 
 router.get("/", async (ctx, next) => {
   try {
     const promise = await db.Admin.findAll({
-        attributes: { exclude: ["password",] }
+      attributes: { exclude: ["password"] }
     });
     ctx.status = HttpStatus.OK;
     ctx.body = {
@@ -50,8 +134,10 @@ router.get("/", async (ctx, next) => {
 router.get("/:id", async (ctx, next) => {
   try {
     const { id } = ctx.params;
-    const promise = await db.Admin.findOne({ where: { id },
-        attributes: { exclude: ["password",] } });
+    const promise = await db.Admin.findOne({
+      where: { id },
+      attributes: { exclude: ["password"] }
+    });
 
     ctx.status = HttpStatus.OK;
     ctx.body = {
@@ -61,26 +147,25 @@ router.get("/:id", async (ctx, next) => {
     await next();
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR,
-      ctx.body = {
+    (ctx.status = HttpStatus.INTERNAL_SERVER_ERROR),
+      (ctx.body = {
         status: false,
         errors: ["Internal Server error"]
-      };
+      });
   }
 });
 
 router.post("/", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
   const role = ctx.role || "";
-  
-  if(!isAdmin || !(role.toLowerCase()==="admin"))
-  {
+
+  if (!isAdmin || !(role.toLowerCase() === "admin")) {
     ctx.status = HttpStatus.UNAUTHORIZED;
 
     ctx.body = {
-      status:false,
-      errors:["Authentication failed",]
-    }
+      status: false,
+      errors: ["Authentication failed"]
+    };
     await next();
     return;
   }
@@ -89,7 +174,8 @@ router.post("/", async (ctx, next) => {
   //validate data using joi package
   const validationErrors = validationUtils.isValidRequestData(
     data,
-    AdminSchema);
+    AdminSchema
+  );
 
   if (validationErrors) {
     ctx.body = {
@@ -141,7 +227,7 @@ router.get("/company-drivers", async (ctx, next) => {
       //   {
       //     model: db.Admin,
       //     as: "broker"
-          // where: { id: Sequelize.col("Load.brokerId") }
+      // where: { id: Sequelize.col("Load.brokerId") }
       //   }
       // ],
       //   {
@@ -150,7 +236,7 @@ router.get("/company-drivers", async (ctx, next) => {
       //     where: { id: Sequelize.col('Load.offererCompanyId') }
       // }
 
-      where: { userId },
+      where: { userId }
       // attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
     ctx.status = HttpStatus.OK;

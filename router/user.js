@@ -10,6 +10,7 @@ const Sequelize = require("sequelize");
 
 const UserSchema = require("../validation/schema/user");
 const validationUtils = require("../validation/functions/utils");
+const ctxHelpter = require("../helper/ctxHelper");
 //_previousDataValue or dataValue? should be checcked using postman
 
 // passport.use(
@@ -47,7 +48,8 @@ router.get("/", async (ctx, next) => {
     };
     await next();
   } catch (err) {
-    ctx.status = 400;
+    console.log(err);
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
     ctx.body = {
       status: false
     };
@@ -265,6 +267,99 @@ router.get("/pending-users", async (ctx, next) => {
     };
   }
   await next();
+});
+
+
+router.post("/activate", async (ctx, next) => {
+  const data = ctx.request.body;
+  const id = data.id;
+
+  const isAdmin = ctx.isAdmin;
+  const role = ctx.role;
+  const AdminId = ctx.AdminId;
+  console.log("ID",id);
+  if(!isAdmin)
+  {
+    ctx = ctxHelpter.setResponse(ctx,HttpStatus.UNAUTHORIZED,{status:false,errors:["Authentication failed",]});
+    await next();
+    return;
+  }
+  if(!id)
+  {
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK,{status:false,errors:["id cannot be blank",]});
+    await next();
+    return;
+  }
+
+  try {
+    const promise = await db.User.update({active:true},{where:{id}});
+    if(promise)
+    {
+      ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {status:true});
+    }
+    else{
+      ctx = ctxHelpter.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {status:true});
+    }
+
+    await next();
+  } catch (err) {
+    console.log(err);
+    //loop through the errors and create an array of errors
+    const createErrors = err.errors;
+    let errors = [];
+
+    for (const error of createErrors) {
+      errors.push(error.message);
+    }    
+    
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {status:false,errors:errors});
+  }
+});
+
+router.post("/deactivate", async (ctx, next) => {
+  const data = ctx.request.body;
+  const id = data.id;
+
+  const isAdmin = ctx.isAdmin;
+  const role = ctx.role;
+  const AdminId = ctx.AdminId;
+  console.log("ID",id);
+  if(!isAdmin)
+  {
+    ctx = ctxHelpter.setResponse(ctx,HttpStatus.UNAUTHORIZED,{status:false,errors:["Authentication failed",]});
+    await next();
+    return;
+  }
+  if(!id)
+  {
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK,{status:false,errors:["id cannot be blank",]});
+    await next();
+    return;
+  }
+
+  try {
+    const promise = await db.User.update({active:false},{where:{id}});
+    if(promise)
+    {
+      ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {status:true});
+    }
+    else{
+      ctx = ctxHelpter.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {status:true});
+    }
+
+    await next();
+  } catch (err) {
+    console.log(err);
+    //loop through the errors and create an array of errors
+    const createErrors = err.errors;
+    let errors = [];
+
+    for (const error of createErrors) {
+      errors.push(error.message);
+    }    
+    
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {status:false,errors:errors});
+  }
 });
 
 

@@ -72,6 +72,33 @@ async function isTokenExists(email)
     }
 }
 
+async function isAdminTokenExists(email)
+{
+    const Op = Sequelize.Op;
+    let thresholdTime = new Date();
+    thresholdTime.setHours(thresholdTime.getHours() - 24);
+  
+    try {
+      const promise = await db.AdminSession.findOne({
+        where: {updatedAt: { [Op.gt]: thresholdTime }},
+        include: {
+            model: db.Admin,
+            where: { email},
+          }
+      });
+      if (!promise) {
+        return false;
+      } else {
+        promise.changed("updatedAt", true);
+        promise.save();
+        return promise;
+      }
+    } catch (err) {
+        console.log(err);
+      return false;
+    }
+}
+
 
 module.exports = {
   checkTokenValidation,
