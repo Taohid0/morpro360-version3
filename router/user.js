@@ -12,19 +12,19 @@ const UserSchema = require("../validation/schema/user");
 const validationUtils = require("../validation/functions/utils");
 //_previousDataValue or dataValue? should be checcked using postman
 
-passport.use(
-  new Strategy((username, password, cb) => {
-    db.User.findOne({ where: { userName: username } }).then(user => {
-      if (!user) {
-        return cb(null, false);
-      }
-      if (!user.validPassword(password)) {
-        return cb(null, false);
-      }
-      return cb(null, user);
-    });
-  })
-);
+// passport.use(
+//   new Strategy((username, password, cb) => {
+//     db.User.findOne({ where: { userName: username } }).then(user => {
+//       if (!user) {
+//         return cb(null, false);
+//       }
+//       if (!user.validPassword(password)) {
+//         return cb(null, false);
+//       }
+//       return cb(null, user);
+//     });
+//   })
+// );
 
 const router = new Router({
   prefix: "/user"
@@ -54,22 +54,24 @@ router.get("/", async (ctx, next) => {
   }
 });
 
-//handle get request for single user
+// handle get request for single user
 router.get("/:id", async (ctx, next) => {
+
   try {
     const {id} = ctx.params;
-    const promise = await db.User.findOne({ where: { id } });
-    ctx.status = 200;
-    const data = promise.dataValues;
-    delete data.password;
+    // const promise = await db.User.findOne({ where: { id } });
+    // ctx.status = 200;
+    // const data = promise.dataValues;
+    // delete data.password;
     
     ctx.body = {
       status: true,
-      user: data
+      user: id
     };
     await next();
   } catch (err) {
-    ctx.status = 404;
+    console.log(err);
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
     ctx.body = {
       status: false
     };
@@ -222,4 +224,49 @@ router.put("/", async (ctx, next) => {
     };
   }
 });
+
+
+router.get("/pending-users", async (ctx, next) => {
+  const isAdmin = ctx.isAdmin;
+  const role = ctx.role;
+  const AdminId = ctx.AdminId;
+
+  if(!isAdmin)
+  {
+    ctx.status = HttpStatus.UNAUTHORIZED;
+    ctx.body ={
+      status:false,
+      errors:["Authentication failed",]
+    }
+    await next();
+    return;
+  }
+
+
+  try {
+    const Op = Sequelize.Op;
+
+    const promise = await db.User.findAll({
+      where: { active:false },
+
+    });
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: true,
+      data: promise,
+    };
+    
+  } catch (err) {
+    console.log(err);
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    ctx.body = {
+      status: false,
+      errors: ["Internal server error"]
+    };
+  }
+  await next();
+});
+
+
+
 module.exports = router;
