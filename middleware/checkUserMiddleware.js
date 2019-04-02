@@ -23,14 +23,8 @@ async function checkUserMiddleware(ctx, next) {
       //raw:true,
         where: { token, updatedAt: { [Op.gt]: thresholdTime } }
       });
-      if (!promise)
-      {
-        app.context.UserId = null;
-        app.context.active = 0;
-        await next();
-        return;
-      }
-      const user = promise.dataValues.User.dataValues;
+    
+      
 
       if (!promise) {
         // tokenUtils.deleteExpiredTokens();
@@ -41,6 +35,8 @@ async function checkUserMiddleware(ctx, next) {
       {
         promise.changed("updatedAt", true);
         promise.save();
+        
+        const user = promise.dataValues.User.dataValues;
         app.context.UserId = promise.dataValues.UserId;
         app.context.active = user.active;
       }

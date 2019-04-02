@@ -1,7 +1,9 @@
 const Router = require("koa-router");
 const passport = require("../config/passport");
 const Strategy = require("passport-local").Strategy;
+const bcrypt = require("bcrypt-nodejs");
 const HttpStatus = require("http-status-codes");
+const userUtils = require("../utils/user");
 
 const db = require("../models");
 const tokenValidation = require("../utils/token");
@@ -25,6 +27,7 @@ const ctxHelper = require("../helper/ctxHelper");
 const router = new Router({
   prefix: "/admin"
 });
+
 //admin login router using email and password
 router.post("/login", async (ctx, next) => {
   const data = ctx.request.body;
@@ -42,12 +45,18 @@ router.post("/login", async (ctx, next) => {
   }
 
   //find admin using email
-  const promise = await db.Admin.findOne({ where: { email: email } });
-  //if no user found return error
+  const promise = await db.Admin.findOne({ where: { email: email },
+  include:[
+    {
+      model:db.Role,
+    }
+  ],
+ });
+  //if no admin found return error
   if (!promise) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
-      errors: ["user not found"]
+      errors: ["admin not found"]
     });
     await next();
     return;
@@ -69,11 +78,13 @@ router.post("/login", async (ctx, next) => {
     await next();
     return;
   }
+  console.log(isAuthencated);
 
   const existingToken = await tokenValidation.isAdminTokenExists(email);
 
   if (existingToken) {
     adminData.token = existingToken.dataValues.token;
+    delete adminData.password;
 
     ctx.status = HttpStatus.OK;
     ctx.body = {
@@ -89,21 +100,21 @@ router.post("/login", async (ctx, next) => {
   //create session data to session table
   const sessionPromise = await db.AdminSession.create({
     token: hashString,
-    UserId: promise.dataValues.id
+    AdminId: promise.dataValues.id
   });
 
   const sessionData = sessionPromise.dataValues;
 
-  //delete password from user data
-  delete userData.password;
+  //delete password from admin data
+  delete adminData.password;
 
-  userData.token = sessionData.token;
+  adminData.token = sessionData.token;
 
   //set status and response for successful request
   ctx.status = HttpStatus.OK;
   ctx.body = {
     status: true,
-    data: userData
+    data: adminData
   };
 
   //call next middleware

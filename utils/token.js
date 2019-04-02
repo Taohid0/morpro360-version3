@@ -103,5 +103,6 @@ async function isAdminTokenExists(email)
 module.exports = {
   checkTokenValidation,
   deleteExpiredTokens,
-  isTokenExists
+  isTokenExists,
+  isAdminTokenExists
 };

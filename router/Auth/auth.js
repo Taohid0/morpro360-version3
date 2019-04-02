@@ -60,6 +60,7 @@ router.post("/login", async (ctx,next)=>{
     if(existingToken)
     {
         userData.token = existingToken.dataValues.token;
+        delete userData.password;
 
         ctx.status = HttpStatus.OK;
         ctx.body = {
