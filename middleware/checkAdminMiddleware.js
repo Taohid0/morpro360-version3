@@ -31,7 +31,6 @@ async function checkAdminMiddleware(ctx, next) {
         await next();
         return;
       }
-      console.log();
       const role = promise.dataValues.Admin.dataValues.Role.name;
 
       promise.changed("updatedAt", true);

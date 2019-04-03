@@ -49,31 +49,21 @@ router.get("/", async (ctx, next) => {
 
 router.get("/:id", async (ctx, next) => {
   const UserId = ctx.UserId;
-  console.log(UserId);
+  console.log("userid",UserId);
   if (!UserId) {
     ctx.status = HttpStatus.OK;
     ctx.body = {
       status: false,
       errors: ["Authentication failed"]
     };
+    await next();
     return;
   }
 
   try {
     const { id } = ctx.params;
     const promise = await db.Load.findOne({
-      //   include: [{
-      //     model: db.Admin,
-      //     as:"admin",
-      //     where: { id: Sequelize.col('Load.brokerId') },
-      //     attributes: { exclude: ["password",] }
-      // },
-      //   {
-      //     model: db.Company,
-      //     as:"offererCompany",
-      //     where: { id: Sequelize.col('Load.offererCompanyId') }
-      // }
-      // ],
+
       where: { id },
       attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
@@ -83,7 +73,7 @@ router.get("/:id", async (ctx, next) => {
       status: true,
       data: promise
     };
-    await next();
+   
   } catch (err) {
     console.log(err);
     ctx.status = HttpStatus.Ok;
@@ -92,6 +82,7 @@ router.get("/:id", async (ctx, next) => {
       errors: ["Internal Server error"]
     };
   }
+   await next();
 });
 
 router.post("/", async (ctx, next) => {
@@ -120,7 +111,7 @@ router.post("/", async (ctx, next) => {
 
   try {
     //need to update this
-    data.adminId = ctx.UserId;
+    data.adminId = ctx.AdminId;
     const promise = await db.Load.create(data);
     const laodData = promise.dataValues;
 
@@ -150,9 +141,12 @@ router.get("/available-load", async (ctx, next) => {
   const Op = Sequelize.Op;
 
   const UserId = ctx.UserId;
+
+  console.log("ctx",ctx);
+
   if (!UserId)
   {
-    ctx.status = HttpStatus.Ok;
+    ctx.status = HttpStatus.OK;
     ctx.body = {
       status:false,
       errors : ["Authentication failed",]
@@ -186,7 +180,7 @@ router.get("/available-load", async (ctx, next) => {
       include: [
         {
           model: db.Admin,
-          as: "broker",
+          as: "admin",
           // where: { id: Sequelize.col("Load.brokerId") }
         }
       ],
@@ -210,6 +204,53 @@ router.get("/available-load", async (ctx, next) => {
   }
   await next();
 });
+
+router.get("/available-load-admin", async (ctx, next) => {
+  const isAdmin = ctx.isAdmin;
+
+console.log(isAdmin);
+
+  if (!isAdmin)
+  {
+    ctx.status = HttpStatus.Ok;
+    ctx.body = {
+      status:false,
+      errors : ["Authentication failed",]
+    }
+    return;
+  }
+
+ 
+
+  try {
+    const loadPromise = await db.Load.findAll({
+      include: [
+        {
+          model: db.Admin,
+          as: "admin",
+          // where: { id: Sequelize.col("Load.brokerId") }
+        }
+      ],
+      where: { status: "A",}
+    });
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: true,
+      data: loadPromise
+    };
+  } catch (err) {
+    console.log(err);
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    status.body = {
+      status: false,
+      errors: ["Internal server error"]
+    };
+  }
+  await next();
+});
+
+
+
 //url ta query param use kore korte hobe
 router.get("/bids/:id", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
