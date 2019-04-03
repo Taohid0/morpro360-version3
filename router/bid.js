@@ -9,6 +9,7 @@ const tokenValidation = require("../utils/token");
 // const validationUtils = require("../validation/functions/utils");
 const BidSchema = require("../validation/schema/bid");
 const validationUtils = require("../validation/functions/utils");
+const ctxHelpter = require("../helper/ctxHelper");
 
 const router = new Router({
   prefix: "/bid"
@@ -46,11 +47,11 @@ router.get("/:id", async (ctx, next) => {
     await next();
   } catch (err) {
     console.log(err);
-    ctx.status = 400,
-      ctx.body = {
+    (ctx.status = 400),
+      (ctx.body = {
         status: false,
         errors: ["Internal Server error"]
-      };
+      });
   }
 });
 
@@ -58,7 +59,7 @@ router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
   const UserId = ctx.UserId;
   const active = ctx.active;
-  console.log("request " ,data);
+  console.log("request ", data);
   console.log(UserId);
 
   if (!UserId || !active) {
@@ -119,39 +120,36 @@ router.get("/my-bids", async (ctx, next) => {
   const Op = Sequelize.Op;
 
   const UserId = ctx.UserId;
-  if (!UserId)
-  {
+  if (!UserId) {
     ctx.status = HttpStatus.Ok;
     ctx.body = {
-      status:false,
-      errors : ["Authentication failed",]
-    }
+      status: false,
+      errors: ["Authentication failed"]
+    };
     return;
   }
 
   try {
-
     const bidPromise = await db.Bid.findAll({
-      where:{bidderId:UserId},  
-      include:[
+      where: { bidderId: UserId },
+      include: [
         {
-          model:db.Load,
-          as:"load",
-          attributes:{exclude:["pickUpaddress","dropOffaddress"]}
+          model: db.Load,
+          as: "load",
+          attributes: { exclude: ["pickUpaddress", "dropOffaddress"] }
         },
         {
-          model:db.Driver,
-          as:"driver",
+          model: db.Driver,
+          as: "driver"
           //attributes:{exclude:["pickUpaddress","dropOffaddress"]}
         },
         {
-          model:db.User,
-          as:"bidder",
-          attributes:{exclude:["password"]}
+          model: db.User,
+          as: "bidder",
+          attributes: { exclude: ["password"] }
         }
-      ],
+      ]
       // attributes:{exclude:["isAssigned",]}
-      
     });
 
     ctx.status = HttpStatus.OK;
@@ -170,6 +168,51 @@ router.get("/my-bids", async (ctx, next) => {
   await next();
 });
 
+router.post("/assign", async (ctx, next) => {
+  const isAdmin = ctx.isAdmin;
 
+  if (!isAdmin) {
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+      status: false,
+      errors: ["Authentication failed"]
+    });
+    await next();
+    return;
+  }
+  const data = ctx.request.body;
+  const bidId = data.bidId;
+  const loadId = data.loadId;
+
+  if (!bidId || !loadId) {
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
+      status: false,
+      errors: ["bidId or loadId cannot be blank"]
+    });
+    await next();
+    return;
+  }
+  try {
+    const promise = await db.Bid.update(
+      { isAssigned: true },
+      { where: { id: bidId } }
+    );
+    const loadPromise = await db.Load.update(
+      { status: "P" },
+      { where: { id: loadId } }
+    );
+    console.log(promise,loadPromise);
+    if (promise && loadPromise) {
+      ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, { status: true });
+      await next();
+    }
+  } catch (err) {
+    console.log(err);
+    ctx.status = ctx = ctxHelpter.setResponse(
+      ctx,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      { status: false, errors: ["Internal Server error", ,] }
+    );
+  }
+});
 
 module.exports = router;

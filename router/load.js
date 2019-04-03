@@ -8,7 +8,7 @@ const db = require("../models");
 const tokenValidation = require("../utils/token");
 const LoadSchema = require("../validation/schema/load");
 const validationUtils = require("../validation/functions/utils");
-
+const ctxHelpter = require('../helper/ctxHelper');
 // passport.use(
 //   new Strategy((username, password, cb) => {
 //     db.User.findOne({ where: { userName: username } }).then(user => {
@@ -209,6 +209,87 @@ router.get("/available-load", async (ctx, next) => {
     };
   }
   await next();
+});
+//url ta query param use kore korte hobe
+router.get("/bids/:id", async (ctx, next) => {
+  const isAdmin = ctx.isAdmin;
+
+  if (!isAdmin) {
+    ctx = ctxHelpter.setResponse(ctx,HttpStatus.UNAUTHORIZED,{errors:["Authentication failed",]});
+    await next();
+    return;
+  }
+  try {
+    const { id } = ctx.params;
+    const promise = await db.Bid.findAll({
+        include: [{
+          model: db.User,
+          as:"bidder",
+          attributes: { exclude: ["password",] }
+      },
+        {
+          model: db.Driver,
+          as:"driver",
+          attributes: { exclude: ["password",] }
+      }
+      ],
+      where: { loadId:id },
+  
+    });
+    ctx = ctxHelpter.setResponse(ctx,HttpStatus.OK,{status:true,data:promise});
+    await next();
+  } catch (err) {
+    console.log(err);
+    ctx.status = HttpStatus.Ok;
+    ctx.body = {
+      status: false,
+      errors: ["Internal Server error",]
+    };
+  }
+});
+
+router.post("/change-status", async (ctx, next) => {
+  const isAdmin = ctx.isAdmin;
+
+  if (!isAdmin) {
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+      status: false,
+      errors: ["Authentication failed"]
+    });
+    await next();
+    return;
+  }
+  const data = ctx.request.body;
+  const loadId = data.loadId;
+  const status = data.status;
+
+  if (!loadId || !status) {
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
+      status: false,
+      errors: ["loadId or status cannot be blank"]
+    });
+    await next();
+    return;
+  }
+  try {
+ 
+    const loadPromise = await db.Load.update(
+      { status: status },
+      { where: { id: loadId } }
+    );
+
+    if (loadPromise) {
+      ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, { status: true });
+      await next();
+    }
+  } catch (err) {
+    console.log(err);
+    ctx.status = ctx = ctxHelpter.setResponse(
+      ctx,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      { status: false, errors: ["Internal Server error", ,] }
+    );
+  }
 });
 
 module.exports = router;
