@@ -97,8 +97,8 @@ router.get("/:id", async (ctx, next) => {
 router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
   
-  if (!ctx.UserId) {
-    ctx.status = HttpStatus.OK;
+  if (!ctx.isAdmin) {
+    ctx.status = HttpStatus.UNAUTHORIZED;
     ctx.body = {
       status: false,
       errors: ["Authentication failed"]

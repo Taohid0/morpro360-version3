@@ -20,6 +20,7 @@ const loadRouter = require("./router/load");
 const driverRouter = require("./router/driver");
 const bidRouter = require("./router/bid");
 const adminRouter = require("./router/admin");
+const roleRouter = require("./router/role");
 
 app.use(BodyParser());
 app.use(Logger());
@@ -36,6 +37,7 @@ app.use(loadRouter.routes()).use(loadRouter.allowedMethods());
 app.use(driverRouter.routes()).use(driverRouter.allowedMethods());
 app.use(bidRouter.routes()).use(bidRouter.allowedMethods());
 app.use(adminRouter.routes()).use(adminRouter.allowedMethods());
+app.use(roleRouter.routes()).use(roleRouter.allowedMethods());
 
 // Syncing our database and logging a message to the user upon success
 db.sequelize.sync().then(function() {
