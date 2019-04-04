@@ -205,8 +205,14 @@ router.get("/available-load", async (ctx, next) => {
   await next();
 });
 
-router.get("/available-load-admin", async (ctx, next) => {
-  const isAdmin = ctx.isAdmin;
+router.get("/all-loads-admin", async (ctx, next) => {
+  let { status } = ctx.query;
+  if (!status)
+  {
+    status="A";
+  }
+
+const isAdmin = ctx.isAdmin;
 
 console.log(isAdmin);
 
@@ -231,7 +237,7 @@ console.log(isAdmin);
           // where: { id: Sequelize.col("Load.brokerId") }
         }
       ],
-      where: { status: "A",}
+      where: { status,}
     });
     ctx.status = HttpStatus.OK;
     ctx.body = {
