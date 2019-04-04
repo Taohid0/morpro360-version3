@@ -8,7 +8,7 @@ const db = require("../models");
 const tokenValidation = require("../utils/token");
 const LoadSchema = require("../validation/schema/load");
 const validationUtils = require("../validation/functions/utils");
-const ctxHelpter = require('../helper/ctxHelper');
+const ctxHelpter = require("../helper/ctxHelper");
 // passport.use(
 //   new Strategy((username, password, cb) => {
 //     db.User.findOne({ where: { userName: username } }).then(user => {
@@ -30,14 +30,14 @@ const router = new Router({
 router.get("/", async (ctx, next) => {
   try {
     const promise = await db.Load.findAll({});
-    ctx.status = 200;
+    ctx.status = HttpStatus.OK;
     ctx.body = {
       status: true,
       data: promise
     };
   } catch (err) {
     console.log(err);
-    ctx.status = 500;
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
     ctx.body = {
       status: false,
       errors: ["Internal server error"]
@@ -46,10 +46,9 @@ router.get("/", async (ctx, next) => {
   await next();
 });
 
-
-router.get("/:id", async (ctx, next) => {
+router.get("/details/:id", async (ctx, next) => {
   const UserId = ctx.UserId;
-  console.log("userid",UserId);
+  console.log("this is another test");
   if (!UserId) {
     ctx.status = HttpStatus.OK;
     ctx.body = {
@@ -63,31 +62,29 @@ router.get("/:id", async (ctx, next) => {
   try {
     const { id } = ctx.params;
     const promise = await db.Load.findOne({
-
       where: { id },
       attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
 
-    ctx.status = 200;
+    ctx.status = HttpStatus.OK;
     ctx.body = {
       status: true,
       data: promise
     };
-   
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.Ok;
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
     ctx.body = {
       status: false,
       errors: ["Internal Server error"]
     };
   }
-   await next();
+  await next();
 });
 
 router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
-  
+
   if (!ctx.isAdmin) {
     ctx.status = HttpStatus.UNAUTHORIZED;
     ctx.body = {
@@ -142,51 +139,47 @@ router.get("/available-load", async (ctx, next) => {
 
   const UserId = ctx.UserId;
 
-  console.log("ctx",ctx);
+  console.log("ctx", ctx);
 
-  if (!UserId)
-  {
+  if (!UserId) {
     ctx.status = HttpStatus.OK;
     ctx.body = {
-      status:false,
-      errors : ["Authentication failed",]
-    }
+      status: false,
+      errors: ["Authentication failed"]
+    };
     return;
   }
 
-  if(!ctx.active)
-  {
+  if (!ctx.active) {
     ctx.status = HttpStatus.OK;
-    ctx.body = 
-    {
-      status:false,
-      errors:["You account is not active yet. You'll see the load boards when it's active.",]
-    }
+    ctx.body = {
+      status: false,
+      errors: [
+        "You account is not active yet. You'll see the load boards when it's active."
+      ]
+    };
     return;
   }
- 
 
   try {
-
     const bidPromise = await db.Bid.findAll({
-      where:{bidderId:UserId},
-      attributes:["loadId"]
+      where: { bidderId: UserId },
+      attributes: ["loadId"]
     });
-    const loadIds = bidPromise.map(bid=>{
+    const loadIds = bidPromise.map(bid => {
       return bid.loadId;
-    })
+    });
     console.log(loadIds);
     const loadPromise = await db.Load.findAll({
       include: [
         {
           model: db.Admin,
-          as: "admin",
+          as: "admin"
           // where: { id: Sequelize.col("Load.brokerId") }
         }
       ],
-     
-      where: { status: "A",
-      id:{[Op.notIn]:loadIds}},
+
+      where: { status: "A", id: { [Op.notIn]: loadIds } },
       attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
     ctx.status = HttpStatus.OK;
@@ -207,26 +200,23 @@ router.get("/available-load", async (ctx, next) => {
 
 router.get("/all-loads-admin", async (ctx, next) => {
   let { status } = ctx.query;
-  if (!status)
-  {
-    status="A";
+  console.log(status);
+  if (!status) {
+    status = "A";
   }
 
-const isAdmin = ctx.isAdmin;
+  const isAdmin = ctx.isAdmin;
 
-console.log(isAdmin);
+  console.log(isAdmin);
 
-  if (!isAdmin)
-  {
+  if (!isAdmin) {
     ctx.status = HttpStatus.Ok;
     ctx.body = {
-      status:false,
-      errors : ["Authentication failed",]
-    }
+      status: false,
+      errors: ["Authentication failed"]
+    };
     return;
   }
-
- 
 
   try {
     const loadPromise = await db.Load.findAll({
@@ -235,9 +225,11 @@ console.log(isAdmin);
           model: db.Admin,
           as: "admin",
           // where: { id: Sequelize.col("Load.brokerId") }
+          attributes: { exclude: ["password"] },
+          include: [{ model: db.Role },]
         }
       ],
-      where: { status,}
+      where: { status }
     });
     ctx.status = HttpStatus.OK;
     ctx.body = {
@@ -255,42 +247,55 @@ console.log(isAdmin);
   await next();
 });
 
-
-
 //url ta query param use kore korte hobe
-router.get("/bids/:id", async (ctx, next) => {
+router.get("/bids", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
-
+  let { loadId } = ctx.query;
   if (!isAdmin) {
-    ctx = ctxHelpter.setResponse(ctx,HttpStatus.UNAUTHORIZED,{errors:["Authentication failed",]});
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+      errors: ["Authentication failed"]
+    });
     await next();
     return;
   }
+
+  if(!loadId)
+  {
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
+      errors: ["loadId cannot be blank"]
+    });
+    await next();
+    return;
+  }
+
+
   try {
-    const { id } = ctx.params;
     const promise = await db.Bid.findAll({
-        include: [{
+      include: [
+        {
           model: db.User,
-          as:"bidder",
-          attributes: { exclude: ["password",] }
-      },
+          as: "bidder",
+          attributes: { exclude: ["password"] }
+        },
         {
           model: db.Driver,
-          as:"driver",
-          attributes: { exclude: ["password",] }
-      }
+          as: "driver",
+          attributes: { exclude: ["password"] }
+        }
       ],
-      where: { loadId:id },
-  
+      where: { loadId }
     });
-    ctx = ctxHelpter.setResponse(ctx,HttpStatus.OK,{status:true,data:promise});
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
+      status: true,
+      data: promise
+    });
     await next();
   } catch (err) {
     console.log(err);
     ctx.status = HttpStatus.Ok;
     ctx.body = {
       status: false,
-      errors: ["Internal Server error",]
+      errors: ["Internal Server error"]
     };
   }
 });
@@ -319,7 +324,6 @@ router.post("/change-status", async (ctx, next) => {
     return;
   }
   try {
- 
     const loadPromise = await db.Load.update(
       { status: status },
       { where: { id: loadId } }
