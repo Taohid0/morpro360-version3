@@ -12,7 +12,11 @@ module.exports = function(sequelize, DataTypes) {
       "isAssigned":{
           type:DataTypes.BOOLEAN,
           defaultValue:false,
-      }
+      },
+      "isDeleted":{
+        type:DataTypes.BOOLEAN,
+        defaultValue:false,
+      },
   
   
     });

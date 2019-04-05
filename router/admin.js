@@ -265,5 +265,37 @@ router.get("/company-drivers", async (ctx, next) => {
   }
   await next();
 });
+router.post("/logout", async (ctx,next)=>{
+  const isAdmin = ctx.isAdmin;
+  const AdminId = ctx.AdminId;
+  if (!isAdmin)
+  {
+      ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      ctx.body = {
+          status:false,
+          errors:["Authentication failed",]
+      }
+      await next();
+      return;
+  }
+  try{
+      const promise = await db.AdminSession.destroy({
+          where:{AdminId}
+      });
+      ctx.status = HttpStatus.OK;
+      ctx.body = {
+          status:true
+      }
+  }
+  catch(err)
+  {
+      console.log(err);
+      ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+      ctx.body = {
+          status:false,
+          errors:["Internal server error",]
+      }
+  }
+});
 
 module.exports = router;

@@ -98,7 +98,11 @@ module.exports = function(sequelize, DataTypes) {
       values:["A","P","I","D"],
       allowNull: false,
       defaultValue: "A"
-    }
+    },
+    "isDeleted":{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false,
+    },
 
   });
 

@@ -209,11 +209,12 @@ router.get("/all-loads-admin", async (ctx, next) => {
   console.log(isAdmin);
 
   if (!isAdmin) {
-    ctx.status = HttpStatus.Ok;
+    ctx.status = HttpStatus.OK;
     ctx.body = {
       status: false,
       errors: ["Authentication failed"]
     };
+    await next();
     return;
   }
 

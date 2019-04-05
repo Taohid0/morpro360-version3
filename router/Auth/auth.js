@@ -98,7 +98,7 @@ router.post("/logout", async (ctx,next)=>{
     const UserId = ctx.UserId;
     if (!UserId)
     {
-        ctx.status = HttpStatus.OK;
+        ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
         ctx.body = {
             status:false,
             errors:["Authentication failed",]
@@ -124,6 +124,6 @@ router.post("/logout", async (ctx,next)=>{
             errors:["Internal server error",]
         }
     }
-})
+});
 
 module.exports = router;

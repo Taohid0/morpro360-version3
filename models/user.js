@@ -37,6 +37,18 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
      
     },
+    "state":{
+      type:DataTypes.STRING,
+      allowNull:false,
+    },
+    "city":{
+      type:DataTypes.STRING,
+      allowNull:false,
+    },
+    address:{
+      type:DataTypes.STRING,
+      allowNull:false,
+    },
     //what is payment here?
     //"payment": DataTypes.STRING,
     //"Notes": DataTypes.STRING
@@ -52,6 +64,10 @@ module.exports = function(sequelize, DataTypes) {
     "password": {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    "isDeleted":{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false,
     },
   });
 

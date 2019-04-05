@@ -25,6 +25,7 @@
     "mysql": "^2.16.0",
     "mysql2": "^1.6.5",
     "node-bcrypt": "0.0.1",
+    "node-cron": "^2.0.3",
     "nodemailer": "^5.1.1",
     "passport-google-auth": "^1.0.2",
     "passport-local": "^1.0.0",

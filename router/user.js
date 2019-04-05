@@ -136,7 +136,7 @@ router.post("/", async (ctx, next) => {
     //if everything goes fine then call next middleware
     await next();
   } catch (err) {
-
+    console.log(err);
     //loop through the errors and create an array of errors
     const createErrors = err.errors;
     let errors = [];

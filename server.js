@@ -5,7 +5,7 @@ const passport = require('koa-passport');
 const cors = require('koa-cors');
 const checkUserMiddleware = require("./middleware/checkUserMiddleware");
 const checkAdminMiddleware = require("./middleware/checkAdminMiddleware");
-
+const cronJobs = require("./utils/cronJobs");
 app = new Koa();
 
 // Setting up port and requiring models for syncing
@@ -38,6 +38,11 @@ app.use(driverRouter.routes()).use(driverRouter.allowedMethods());
 app.use(bidRouter.routes()).use(bidRouter.allowedMethods());
 app.use(adminRouter.routes()).use(adminRouter.allowedMethods());
 app.use(roleRouter.routes()).use(roleRouter.allowedMethods());
+
+
+//cron jobs
+cronJobs.deleteExpiredTokensCronJob();
+
 
 // Syncing our database and logging a message to the user upon success
 db.sequelize.sync().then(function() {

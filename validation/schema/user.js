@@ -6,6 +6,9 @@ const UserSchema = {
     email: Joi.string().email({ minDomainAtoms: 2 }).required(),
     MC: Joi.number().integer().required(),
     DOT: Joi.number().integer().required(),
+    state:Joi.string().required(),
+    city:Joi.string().required(),
+    address: Joi.string().required(),
     description:Joi.string().required(),
     password:Joi.string().required()
 };

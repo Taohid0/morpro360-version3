@@ -43,7 +43,11 @@ module.exports = function(sequelize, DataTypes) {
     password: {
       type: DataTypes.STRING,
       allowNull: false
-    }
+    },
+    "isDeleted":{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false,
+    },
   });
 
   Driver.associate = function(models) {
