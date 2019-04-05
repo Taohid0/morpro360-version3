@@ -176,9 +176,9 @@ router.get("/available-load", async (ctx, next) => {
           model: db.Admin,
           as: "admin"
           // where: { id: Sequelize.col("Load.brokerId") }
-        }
+        },
       ],
-
+      order: [["createdAt","ASC"]],
       where: { status: "A", id: { [Op.notIn]: loadIds } },
       attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
@@ -204,7 +204,6 @@ router.get("/all-loads-admin", async (ctx, next) => {
   if (!status) {
     status = "A";
   }
-
   const isAdmin = ctx.isAdmin;
 
   console.log(isAdmin);
@@ -218,6 +217,11 @@ router.get("/all-loads-admin", async (ctx, next) => {
     return;
   }
 
+  let sortingOrder="ASC";
+  if(status==="A")
+  {
+    sortingOrder="DESC";
+  }
   try {
     const loadPromise = await db.Load.findAll({
       include: [
@@ -226,9 +230,10 @@ router.get("/all-loads-admin", async (ctx, next) => {
           as: "admin",
           // where: { id: Sequelize.col("Load.brokerId") }
           attributes: { exclude: ["password"] },
-          include: [{ model: db.Role },]
+          include: [{ model: db.Role }]
         }
       ],
+      order: [["createdAt", sortingOrder],],
       where: { status }
     });
     ctx.status = HttpStatus.OK;
@@ -259,15 +264,13 @@ router.get("/bids", async (ctx, next) => {
     return;
   }
 
-  if(!loadId)
-  {
+  if (!loadId) {
     ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
       errors: ["loadId cannot be blank"]
     });
     await next();
     return;
   }
-
 
   try {
     const promise = await db.Bid.findAll({
@@ -283,6 +286,9 @@ router.get("/bids", async (ctx, next) => {
           attributes: { exclude: ["password"] }
         }
       ],
+      order: [["rate", "ASC"],
+            ["createdAt","ASC"]]
+      ,
       where: { loadId }
     });
     ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
