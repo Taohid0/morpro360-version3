@@ -257,7 +257,7 @@ router.get("/company-drivers", async (ctx, next) => {
     };
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    ctx.status = HttpStatus.UNAUTHORIZED;
     status.body = {
       status: false,
       errors: ["Internal server error"]

@@ -82,6 +82,52 @@ router.get("/details/:id", async (ctx, next) => {
   await next();
 });
 
+router.get("/details/all-fields/:id", async (ctx, next) => {
+  const UserId = ctx.UserId;
+  const isAdmin = ctx.isAdmin;
+
+  if (!UserId && !isAdmin) {
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: false,
+      errors: ["Authentication failed"]
+    };
+    await next();
+    return;
+  }
+
+  try {
+    const { id } = ctx.params;
+    const promise = await db.Load.findOne({
+      where: { id },
+      include:[{
+        model: db.Admin,
+        as:"admin",
+        attributes:{"exclude":["password",]}
+        ,
+        include:[{
+          model:db.Role,
+        }]
+      },
+      ]
+    });
+
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: true,
+      data: promise
+    };
+  } catch (err) {
+    console.log(err);
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    ctx.body = {
+      status: false,
+      errors: ["Internal Server error"]
+    };
+  }
+  await next();
+});
+
 router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
 
@@ -176,9 +222,9 @@ router.get("/available-load", async (ctx, next) => {
           model: db.Admin,
           as: "admin"
           // where: { id: Sequelize.col("Load.brokerId") }
-        },
+        }
       ],
-      order: [["createdAt","ASC"]],
+      order: [["createdAt", "ASC"]],
       where: { status: "A", id: { [Op.notIn]: loadIds } },
       attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
@@ -209,7 +255,7 @@ router.get("/all-loads-admin", async (ctx, next) => {
   console.log(isAdmin);
 
   if (!isAdmin) {
-    ctx.status = HttpStatus.OK;
+    ctx.status = HttpStatus.UNAUTHORIZED;
     ctx.body = {
       status: false,
       errors: ["Authentication failed"]
@@ -218,10 +264,9 @@ router.get("/all-loads-admin", async (ctx, next) => {
     return;
   }
 
-  let sortingOrder="ASC";
-  if(status==="A")
-  {
-    sortingOrder="DESC";
+  let sortingOrder = "ASC";
+  if (status === "A") {
+    sortingOrder = "DESC";
   }
   try {
     const loadPromise = await db.Load.findAll({
@@ -234,7 +279,7 @@ router.get("/all-loads-admin", async (ctx, next) => {
           include: [{ model: db.Role }]
         }
       ],
-      order: [["createdAt", sortingOrder],],
+      order: [["createdAt", sortingOrder]],
       where: { status }
     });
     ctx.status = HttpStatus.OK;
@@ -287,9 +332,7 @@ router.get("/bids", async (ctx, next) => {
           attributes: { exclude: ["password"] }
         }
       ],
-      order: [["rate", "ASC"],
-            ["createdAt","ASC"]]
-      ,
+      order: [["rate", "ASC"], ["createdAt", "ASC"]],
       where: { loadId }
     });
     ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
