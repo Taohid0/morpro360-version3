@@ -30,31 +30,27 @@ const router = new Router({
 router.get("/", async (ctx, next) => {
   try {
     const promise = await db.Load.findAll({});
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
-      data: promise
-    };
+      data: "nothing here now" //promise
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
       errors: ["Internal server error"]
-    };
+    });
   }
   await next();
 });
 
 router.get("/details/:id", async (ctx, next) => {
   const UserId = ctx.UserId;
-  console.log("this is another test");
   if (!UserId) {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
-    };
+    });
     await next();
     return;
   }
@@ -65,19 +61,16 @@ router.get("/details/:id", async (ctx, next) => {
       where: { id },
       attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
-
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status: true,
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
+      status: false,
       data: promise
-    };
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
-      errors: ["Internal Server error"]
-    };
+      errors: ["Internal server error"]
+    });
   }
   await next();
 });
@@ -87,11 +80,11 @@ router.get("/details/all-fields/:id", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
 
   if (!UserId && !isAdmin) {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
-    };
+    });
+
     await next();
     return;
   }
@@ -100,30 +93,30 @@ router.get("/details/all-fields/:id", async (ctx, next) => {
     const { id } = ctx.params;
     const promise = await db.Load.findOne({
       where: { id },
-      include:[{
-        model: db.Admin,
-        as:"admin",
-        attributes:{"exclude":["password",]}
-        ,
-        include:[{
-          model:db.Role,
-        }]
-      },
+      include: [
+        {
+          model: db.Admin,
+          as: "admin",
+          attributes: { exclude: ["password"] },
+          include: [
+            {
+              model: db.Role
+            }
+          ]
+        }
       ]
     });
 
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: promise
-    };
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
-      errors: ["Internal Server error"]
-    };
+      errors: ["Internal server error"]
+    });
   }
   await next();
 });
@@ -132,11 +125,11 @@ router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
 
   if (!ctx.isAdmin) {
-    ctx.status = HttpStatus.UNAUTHORIZED;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
-    };
+    });
+    await next();
     return;
   }
 
@@ -144,11 +137,11 @@ router.post("/", async (ctx, next) => {
   const validationErrors = validationUtils.isValidRequestData(data, LoadSchema);
 
   if (validationErrors) {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
       errors: validationErrors
-    };
+    });
+    await next();
     return;
   }
 
@@ -157,12 +150,7 @@ router.post("/", async (ctx, next) => {
     data.adminId = ctx.AdminId;
     const promise = await db.Load.create(data);
     const laodData = promise.dataValues;
-
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status: true
-    };
-    await next();
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
   } catch (err) {
     console.log(err);
     //loop through the errors and create an array of errors
@@ -172,12 +160,9 @@ router.post("/", async (ctx, next) => {
     for (const error of createErrors) {
       errors.push(error.message);
     }
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status: false,
-      errors
-    };
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: false, errors });
   }
+  await next();
 });
 
 router.get("/available-load", async (ctx, next) => {
@@ -188,22 +173,22 @@ router.get("/available-load", async (ctx, next) => {
   console.log("ctx", ctx);
 
   if (!UserId) {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
-    };
+    });
+    await next();
     return;
   }
 
   if (!ctx.active) {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
       errors: [
         "You account is not active yet. You'll see the load boards when it's active."
       ]
-    };
+    });
+    await next();
     return;
   }
 
@@ -215,42 +200,33 @@ router.get("/available-load", async (ctx, next) => {
     const loadIds = bidPromise.map(bid => {
       return bid.loadId;
     });
-    console.log(loadIds);
     const loadPromise = await db.Load.findAll({
       include: [
         {
           model: db.Admin,
           as: "admin"
-          // where: { id: Sequelize.col("Load.brokerId") }
         }
       ],
       order: [["createdAt", "ASC"]],
       where: { status: "A", id: { [Op.notIn]: loadIds } },
       attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: loadPromise
-    };
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    status.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
       errors: ["Internal server error"]
-    };
+    });
   }
   await next();
 });
 
-
-
-
-
 router.get("/all-loads-admin", async (ctx, next) => {
   let { status } = ctx.query;
-  console.log(status);
   if (!status) {
     status = "A";
   }
@@ -259,11 +235,10 @@ router.get("/all-loads-admin", async (ctx, next) => {
   console.log(isAdmin);
 
   if (!isAdmin) {
-    ctx.status = HttpStatus.UNAUTHORIZED;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
-    };
+    });
     await next();
     return;
   }
@@ -278,7 +253,6 @@ router.get("/all-loads-admin", async (ctx, next) => {
         {
           model: db.Admin,
           as: "admin",
-          // where: { id: Sequelize.col("Load.brokerId") }
           attributes: { exclude: ["password"] },
           include: [{ model: db.Role }]
         }
@@ -286,18 +260,16 @@ router.get("/all-loads-admin", async (ctx, next) => {
       order: [["createdAt", sortingOrder]],
       where: { status }
     });
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: loadPromise
-    };
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    status.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
       errors: ["Internal server error"]
-    };
+    });
   }
   await next();
 });
@@ -343,7 +315,6 @@ router.get("/bids", async (ctx, next) => {
       status: true,
       data: promise
     });
-    await next();
   } catch (err) {
     console.log(err);
     ctx.status = HttpStatus.Ok;
@@ -352,6 +323,7 @@ router.get("/bids", async (ctx, next) => {
       errors: ["Internal Server error"]
     };
   }
+  await next();
 });
 
 router.post("/change-status", async (ctx, next) => {
@@ -383,10 +355,7 @@ router.post("/change-status", async (ctx, next) => {
       { where: { id: loadId } }
     );
 
-    if (loadPromise) {
-      ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, { status: true });
-      await next();
-    }
+    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, { status: true });
   } catch (err) {
     console.log(err);
     ctx.status = ctx = ctxHelpter.setResponse(
@@ -395,6 +364,7 @@ router.post("/change-status", async (ctx, next) => {
       { status: false, errors: ["Internal Server error", ,] }
     );
   }
+  await next();
 });
 
 module.exports = router;

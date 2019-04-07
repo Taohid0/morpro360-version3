@@ -8,7 +8,6 @@ const tokenValidation = require("../utils/token");
 const DriverSchema = require("../validation/schema/driver");
 const validationUtils = require("../validation/functions/utils");
 
-
 const router = new Router({
   prefix: "/role"
 });
@@ -16,42 +15,36 @@ const router = new Router({
 router.get("/", async (ctx, next) => {
   try {
     const promise = await db.Role.findAll({});
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: promise
-    };
-    await next();
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
       errors: ["Internal server error"]
-    };
+    });
   }
+  await next();
 });
 
 router.get("/:id", async (ctx, next) => {
   try {
     const { id } = ctx.params;
     const promise = await db.Role.findOne({ where: { id } });
-
-    ctx.status = 200;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: promise
-    };
-    await next();
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = 400,
-      ctx.body = {
-        status: false,
-        errors: ["Internal Server error"]
-      };
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
+      status: false,
+      errors: ["Internal server error"]
+    });
   }
+  await next();
 });
-
 
 module.exports = router;
