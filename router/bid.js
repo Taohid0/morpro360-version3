@@ -9,7 +9,7 @@ const tokenValidation = require("../utils/token");
 // const validationUtils = require("../validation/functions/utils");
 const BidSchema = require("../validation/schema/bid");
 const validationUtils = require("../validation/functions/utils");
-const ctxHelpter = require("../helper/ctxHelper");
+const ctxHelper = require("../helper/ctxHelper");
 
 const router = new Router({
   prefix: "/bid"
@@ -219,7 +219,7 @@ router.post("/assign", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
 
   if (!isAdmin) {
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
     });
@@ -231,7 +231,7 @@ router.post("/assign", async (ctx, next) => {
   const loadId = data.loadId;
 
   if (!bidId || !loadId) {
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
       errors: ["bidId or loadId cannot be blank"]
     });
@@ -249,11 +249,11 @@ router.post("/assign", async (ctx, next) => {
     );
     console.log(promise, loadPromise);
     if (promise && loadPromise) {
-      ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, { status: true });
+      ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
     }
   } catch (err) {
     console.log(err);
-    ctx.status = ctx = ctxHelpter.setResponse(
+    ctx.status = ctx = ctxHelper.setResponse(
       ctx,
       HttpStatus.INTERNAL_SERVER_ERROR,
       { status: false, errors: ["Internal Server error", ,] }

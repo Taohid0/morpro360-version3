@@ -9,7 +9,7 @@ const Sequelize = require("sequelize");
 
 const UserSchema = require("../validation/schema/user");
 const validationUtils = require("../validation/functions/utils");
-const ctxHelpter = require("../helper/ctxHelper");
+const ctxHelper = require("../helper/ctxHelper");
 //_previousDataValue or dataValue? should be checcked using postman
 
 // passport.use(
@@ -50,7 +50,7 @@ router.get("/", async (ctx, next) => {
 });
 
 // handle get request for single user
-router.get("/:id", async (ctx, next) => {
+router.get("/details/:id", async (ctx, next) => {
   ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
     status: true,
     data: "to be added soon"
@@ -194,7 +194,7 @@ router.post("/activate", async (ctx, next) => {
   const AdminId = ctx.AdminId;
   console.log("ID", id);
   if (!isAdmin) {
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
     });
@@ -202,7 +202,7 @@ router.post("/activate", async (ctx, next) => {
     return;
   }
   if (!id) {
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
       errors: ["id cannot be blank"]
     });
@@ -213,9 +213,9 @@ router.post("/activate", async (ctx, next) => {
   try {
     const promise = await db.User.update({ active: true }, { where: { id } });
     if (promise) {
-      ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, { status: true });
+      ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
     } else {
-      ctx = ctxHelpter.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
+      ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
         status: true
       });
     }
@@ -229,7 +229,7 @@ router.post("/activate", async (ctx, next) => {
       errors.push(error.message);
     }
 
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
       errors: errors
     });
@@ -245,7 +245,7 @@ router.post("/deactivate", async (ctx, next) => {
   const role = ctx.role;
   const AdminId = ctx.AdminId;
   if (!isAdmin) {
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
     });
@@ -253,7 +253,7 @@ router.post("/deactivate", async (ctx, next) => {
     return;
   }
   if (!id) {
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
       errors: ["id cannot be blank"]
     });
@@ -264,9 +264,9 @@ router.post("/deactivate", async (ctx, next) => {
   try {
     const promise = await db.User.update({ active: false }, { where: { id } });
     if (promise) {
-      ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, { status: true });
+      ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
     } else {
-      ctx = ctxHelpter.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
+      ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
         status: true
       });
     }
@@ -280,7 +280,7 @@ router.post("/deactivate", async (ctx, next) => {
       errors.push(error.message);
     }
 
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
       errors: errors
     });

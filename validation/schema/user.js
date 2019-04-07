@@ -9,7 +9,7 @@ const UserSchema = {
     state:Joi.string().required(),
     city:Joi.string().required(),
     address: Joi.string().required(),
-    description:Joi.string().required(),
+    description:Joi.string().allow("").optional(),
     password:Joi.string().required()
 };
 

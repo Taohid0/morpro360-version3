@@ -14,7 +14,6 @@ var db = require("./models");
 
 const userRouter = require("./router/user");
 const authRouter = require('./router/Auth/auth');
-const companyRouter = require('./router/company');
 const oauthRouter = require('./router/Auth/signUpWithGmail');
 const loadRouter = require("./router/load");
 const driverRouter = require("./router/driver");
@@ -29,10 +28,9 @@ app.use(cors());
 app.use(checkUserMiddleware);
 app.use(checkAdminMiddleware);
 
-app.use(userRouter.routes()).use(userRouter.allowedMethods());
 app.use(authRouter.routes()).use(authRouter.allowedMethods());
-app.use(companyRouter.routes()).use(companyRouter.allowedMethods());
 app.use(oauthRouter.routes()).use(oauthRouter.allowedMethods());
+app.use(userRouter.routes()).use(userRouter.allowedMethods());
 app.use(loadRouter.routes()).use(loadRouter.allowedMethods());
 app.use(driverRouter.routes()).use(driverRouter.allowedMethods());
 app.use(bidRouter.routes()).use(bidRouter.allowedMethods());

@@ -8,7 +8,7 @@ const db = require("../models");
 const tokenValidation = require("../utils/token");
 const LoadSchema = require("../validation/schema/load");
 const validationUtils = require("../validation/functions/utils");
-const ctxHelpter = require("../helper/ctxHelper");
+const ctxHelper = require("../helper/ctxHelper");
 // passport.use(
 //   new Strategy((username, password, cb) => {
 //     db.User.findOne({ where: { userName: username } }).then(user => {
@@ -279,7 +279,7 @@ router.get("/bids", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
   let { loadId } = ctx.query;
   if (!isAdmin) {
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       errors: ["Authentication failed"]
     });
     await next();
@@ -287,7 +287,7 @@ router.get("/bids", async (ctx, next) => {
   }
 
   if (!loadId) {
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       errors: ["loadId cannot be blank"]
     });
     await next();
@@ -311,7 +311,7 @@ router.get("/bids", async (ctx, next) => {
       order: [["rate", "ASC"], ["createdAt", "ASC"]],
       where: { loadId }
     });
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: promise
     });
@@ -330,7 +330,7 @@ router.post("/change-status", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
 
   if (!isAdmin) {
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
     });
@@ -342,7 +342,7 @@ router.post("/change-status", async (ctx, next) => {
   const status = data.status;
 
   if (!loadId || !status) {
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
       errors: ["loadId or status cannot be blank"]
     });
@@ -355,10 +355,10 @@ router.post("/change-status", async (ctx, next) => {
       { where: { id: loadId } }
     );
 
-    ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, { status: true });
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
   } catch (err) {
     console.log(err);
-    ctx.status = ctx = ctxHelpter.setResponse(
+    ctx.status = ctx = ctxHelper.setResponse(
       ctx,
       HttpStatus.INTERNAL_SERVER_ERROR,
       { status: false, errors: ["Internal Server error", ,] }
