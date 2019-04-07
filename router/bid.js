@@ -167,6 +167,50 @@ router.get("/my-bids", async (ctx, next) => {
   }
   await next();
 });
+router.get("/winning-bids", async (ctx, next) => {
+  const Op = Sequelize.Op;
+
+  const UserId = ctx.UserId;
+
+  console.log("ctx", ctx);
+
+  if (!UserId) {
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: false,
+      errors: ["Authentication failed"]
+    };
+    return;
+  }
+
+  try {
+    const bidPromise = await db.Bid.findAll({
+      where: { bidderId: UserId, isAssigned: true },
+      include: {
+        model: db.Load,
+        as: "load",
+        include: {
+          model: db.Admin,
+          as: "admin"
+        }
+      }
+    });
+ 
+    ctx.status = HttpStatus.OK;
+    ctx.body = {
+      status: true,
+      data: bidPromise
+    };
+  } catch (err) {
+    console.log(err);
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    status.body = {
+      status: false,
+      errors: ["Internal server error"]
+    };
+  }
+  await next();
+});
 
 router.post("/assign", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
@@ -200,7 +244,7 @@ router.post("/assign", async (ctx, next) => {
       { status: "P" },
       { where: { id: loadId } }
     );
-    console.log(promise,loadPromise);
+    console.log(promise, loadPromise);
     if (promise && loadPromise) {
       ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, { status: true });
       await next();

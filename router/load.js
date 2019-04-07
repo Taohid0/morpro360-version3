@@ -244,6 +244,10 @@ router.get("/available-load", async (ctx, next) => {
   await next();
 });
 
+
+
+
+
 router.get("/all-loads-admin", async (ctx, next) => {
   let { status } = ctx.query;
   console.log(status);
