@@ -228,7 +228,7 @@ router.put("/", async (ctx, next) => {
 });
 
 
-router.get("/pending-users", async (ctx, next) => {
+router.get("/all-users", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
   const role = ctx.role;
   const AdminId = ctx.AdminId;
@@ -244,12 +244,21 @@ router.get("/pending-users", async (ctx, next) => {
     return;
   }
 
-
+  let { status } = ctx.query;
+  console.log(status);
+  if (!status) {
+    ctx = ctxHelpter.setResponse(ctx,HttpStatus.OK,{status:false,errors:["status cannot be blank"]});
+    await next();
+    return ;
+  }
   try {
     const Op = Sequelize.Op;
-
     const promise = await db.User.findAll({
-      where: { active:false },
+      where: { active:status },
+      includes:[{
+        model:db.Driver,
+        required:true,
+      },],
 
     });
     ctx.status = HttpStatus.OK;

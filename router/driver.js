@@ -120,39 +120,41 @@ router.post("/", async (ctx, next) => {
   }
 });
 
-router.get("/company-drivers", async (ctx, next) => {
+router.get("/company-drivers/:id", async (ctx, next) => {
+  const {id} = ctx.params;
   const userId = ctx.UserId;
-  if (!userId) {
-    ctx.status = HttpStatus.OK;
+  const isAdmin = ctx.isAdmin;
+  if (!userId && !isAdmin) {
+    ctx.status = HttpStatus.UNAUTHORIZED;
     ctx.body = {
       status: false,
       errors: ["Authentication failes"]
     };
+    await next();
+    return;
+  }
+
+  if(!id)
+  {
+    ctx.status=HttpStatus.OK;
+    ctx.body = {
+      status:false,
+      errors:["id cannot be blank",]
+    }
+    await next();
     return;
   }
   try {
-    const loadPromise = await db.Driver.findAll({
-      // include: [
-      //   {
-      //     model: db.Admin,
-      //     as: "broker"
-          // where: { id: Sequelize.col("Load.brokerId") }
-      //   }
-      // ],
-      //   {
-      //     model: db.Company,
-      //     as:"offererCompany",
-      //     where: { id: Sequelize.col('Load.offererCompanyId') }
-      // }
-
-      where: { userId },
+    const driverPromise = await db.Driver.findAll({
+      where: { userId:id },
       attributes: { exclude: ["password",] }
     });
     ctx.status = HttpStatus.OK;
     ctx.body = {
       status: true,
-      data: loadPromise
+      data: driverPromise
     };
+    console.log(driverPromise);
   } catch (err) {
     console.log(err);
     ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
