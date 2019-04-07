@@ -1,7 +1,5 @@
 // Requiring bcrypt for password hashing. Using the bcrypt-nodejs version as the regular bcrypt module
-// sometimes causes errors on Windows machines
 var bcrypt = require("bcrypt-nodejs");
-// Creating our Admin model
 module.exports = function(sequelize, DataTypes) {
   var Admin = sequelize.define("Admin", {
     "firstName":{
@@ -17,8 +15,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull:false,
       unique:true
     },
-    //MC#:
-    //DOT#
     // The email cannot be null, and must be a proper email before creation
     "email": {
       type: DataTypes.STRING,
@@ -41,13 +37,7 @@ module.exports = function(sequelize, DataTypes) {
   });
 
     Admin.associate = function(models) {
-    // Associating Author with Posts
-    // When an Author is deleted, also delete any associated Posts
         Admin.belongsTo(models.Role, {through:'role'});
-        // Admin.belongsToMany(models.Loads, {through:'LoadsAdmin'});
-        // Admin.hasMany(models.Ratings, {as:'AdminRatings'});
-        // Admin.hasMany(models.Expenses, {as:'AdminExpenses'});
-        // Admin.belongsToMany(models.Company, {through: 'CompanyAdmin', foreignKey: 'AdminId' });
     };
   // Creating a custom method for our Admin model. This will check if an unhashed password entered by the Admin can be compared to the hashed password stored in our database
     Admin.prototype.validPassword = function(password) {

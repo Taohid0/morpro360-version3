@@ -5,11 +5,11 @@ const HttpStatus = require("http-status-codes");
 
 const userUtils = require("../../utils/user");
 const tokenValidation = require("../../utils/token");
+ const ctxHelper = require('../../helper/ctxHelper');
 
 const router = new Router({
     prefix:"/auth"
 });
-
 
 
 //user login router using email and password
@@ -20,11 +20,8 @@ router.post("/login", async (ctx,next)=>{
 
     //if email or password not present return error
     if(!email || !password){
-        ctx.status = HttpStatus.BAD_REQUEST;
-        ctx.body = {
-            status:false,
-            errors:["email of password cannot be blank",]
-        }
+        ctx  = ctxHelper.setResponse(ctx,HttpStatus.OK,{status:false,errors:["email or password cannot be blank",]});
+        await next();
         return;
     }
 
@@ -32,11 +29,8 @@ router.post("/login", async (ctx,next)=>{
     const promise = await db.User.findOne({where:{email:email}});
     //if no user found return error
     if (!promise){
-        ctx.status = HttpStatus.OK;
-        ctx.body ={
-            status:false,
-            errors:["user not found",]
-        }
+        ctx  = ctxHelper.setResponse(ctx,HttpStatus.OK,{status:false,errors:["user not found",]});
+        await next();
         return;
     }
 
@@ -47,11 +41,8 @@ router.post("/login", async (ctx,next)=>{
     const isAuthencated = bcrypt.compareSync(ctx.request.body.password, userData.password);
     //if password mismatched return error
     if(!isAuthencated){
-        ctx.status = HttpStatus.OK;
-        ctx.body = {
-            status:false,
-            errors:["email/password mismatched",]
-        }
+        ctx  = ctxHelper.setResponse(ctx,HttpStatus.OK,{status:false,errors:["email/password mismatched",]});
+        await next();
         return;
     }
 
@@ -62,11 +53,8 @@ router.post("/login", async (ctx,next)=>{
         userData.token = existingToken.dataValues.token;
         delete userData.password;
 
+        ctx  = ctxHelper.setResponse(ctx,HttpStatus.OK,{status:true,data:userData});
         ctx.status = HttpStatus.OK;
-        ctx.body = {
-            status:true,
-            data : userData
-        }
         await next();
         return;
     }
@@ -84,13 +72,7 @@ router.post("/login", async (ctx,next)=>{
     userData.token = sessionData.token;
 
     //set status and response for successful request
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-        status:true,
-        data:userData
-    }
-
-    //call next middleware
+    ctx  = ctxHelper.setResponse(ctx,HttpStatus.OK,{status:true,data:userData});
     await next();
 });
 
@@ -98,11 +80,7 @@ router.post("/logout", async (ctx,next)=>{
     const UserId = ctx.UserId;
     if (!UserId)
     {
-        ctx.status = HttpStatus.UNAUTHORIZED;
-        ctx.body = {
-            status:false,
-            errors:["Authentication failed",]
-        }
+        ctx  = ctxHelper.setResponse(ctx,HttpStatus.UNAUTHORIZED,{status:false,errors:["Authentication failed,"]});
         await next();
         return;
     }
@@ -110,20 +88,15 @@ router.post("/logout", async (ctx,next)=>{
         const promise = await db.Session.destroy({
             where:{UserId}
         });
-        ctx.status = HttpStatus.OK;
-        ctx.body = {
-            status:true
-        }
+        ctx  = ctxHelper.setResponse(ctx,HttpStatus.OK,{status:true});
     }
     catch(err)
     {
         console.log(err);
-        ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-        ctx.body = {
-            status:false,
-            errors:["Internal server error",]
-        }
+        ctx  = ctxHelper.setResponse(ctx,HttpStatus.INTERNAL_SERVER_ERROR,{status:false,errors:["Internal server error",]});
+   
     }
+    await next();
 });
 
 module.exports = router;

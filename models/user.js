@@ -49,9 +49,6 @@ module.exports = function(sequelize, DataTypes) {
       type:DataTypes.STRING,
       allowNull:false,
     },
-    //what is payment here?
-    //"payment": DataTypes.STRING,
-    //"Notes": DataTypes.STRING
     "description":{
       type:DataTypes.STRING,
       allowNull:false,
@@ -72,13 +69,6 @@ module.exports = function(sequelize, DataTypes) {
   });
 
     User.associate = function(models) {
-    // Associating Author with Posts
-    // When an Author is deleted, also delete any associated Posts
-        // User.belongsToMany(models.Role, {through:'UserRole'});
-        // User.belongsToMany(models.Loads, {through:'LoadsUser'});
-        // User.hasMany(models.Ratings, {as:'UserRatings'});
-        // User.hasMany(models.Expenses, {as:'UserExpenses'});
-        // User.belongsToMany(models.Company, {through: 'CompanyUser', foreignKey: 'UserId' });
     };
   // Creating a custom method for our User model. This will check if an unhashed password entered by the user can be compared to the hashed password stored in our database
     User.prototype.validPassword = function(password) {

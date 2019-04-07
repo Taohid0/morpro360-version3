@@ -51,7 +51,6 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Driver.associate = function(models) {
-    // Driver.belongsTo(models.Company,{as:"company",allowNull:false});
     Driver.belongsTo(models.User, { as: "user", allowNull: false });
   };
   Driver.addHook("beforeCreate", function(driver) {
