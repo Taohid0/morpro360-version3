@@ -45,13 +45,14 @@ router.post("/login", async (ctx, next) => {
   }
 
   //find admin using email
-  const promise = await db.Admin.findOne({ where: { email: email },
-  include:[
-    {
-      model:db.Role,
-    }
-  ],
- });
+  const promise = await db.Admin.findOne({
+    where: { email: email },
+    include: [
+      {
+        model: db.Role
+      }
+    ]
+  });
   //if no admin found return error
   if (!promise) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
@@ -78,7 +79,6 @@ router.post("/login", async (ctx, next) => {
     await next();
     return;
   }
-  console.log(isAuthencated);
 
   const existingToken = await tokenValidation.isAdminTokenExists(email);
 
@@ -86,11 +86,10 @@ router.post("/login", async (ctx, next) => {
     adminData.token = existingToken.dataValues.token;
     delete adminData.password;
 
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: adminData
-    };
+    });
     await next();
     return;
   }
@@ -111,12 +110,10 @@ router.post("/login", async (ctx, next) => {
   adminData.token = sessionData.token;
 
   //set status and response for successful request
-  ctx.status = HttpStatus.OK;
-  ctx.body = {
+  ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
     status: true,
     data: adminData
-  };
-
+  });
   //call next middleware
   await next();
 });
@@ -126,19 +123,17 @@ router.get("/", async (ctx, next) => {
     const promise = await db.Admin.findAll({
       attributes: { exclude: ["password"] }
     });
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: promise
-    };
+    });
     await next();
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
-      errors: ["Internal server error"]
-    };
+      errors: ["Interlan server error"]
+    });
   }
 });
 
@@ -150,19 +145,17 @@ router.get("/:id", async (ctx, next) => {
       attributes: { exclude: ["password"] }
     });
 
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: promise
-    };
+    });
     await next();
   } catch (err) {
     console.log(err);
-    (ctx.status = HttpStatus.INTERNAL_SERVER_ERROR),
-      (ctx.body = {
-        status: false,
-        errors: ["Internal Server error"]
-      });
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
+      status: false,
+      errors: ["Interlal server error"]
+    });
   }
 });
 
@@ -171,12 +164,10 @@ router.post("/", async (ctx, next) => {
   const role = ctx.role || "";
 
   if (!isAdmin || !(role.toLowerCase() === "admin")) {
-    ctx.status = HttpStatus.UNAUTHORIZED;
-
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
-    };
+    });
     await next();
     return;
   }
@@ -189,21 +180,18 @@ router.post("/", async (ctx, next) => {
   );
 
   if (validationErrors) {
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
       errors: validationErrors
-    };
+    });
+    await next();
     return;
   }
 
   try {
     const promise = await db.Admin.create(data);
-    console.log(data);
-    // const rolePromise = await db.AdminRole.create({})
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status: true
-    };
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
+
     await next();
   } catch (err) {
     console.log(err);
@@ -214,88 +202,61 @@ router.post("/", async (ctx, next) => {
     for (const error of createErrors) {
       errors.push(error.message);
     }
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status: false,
-      errors
-    };
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: false, errors });
   }
 });
 
 router.get("/company-drivers", async (ctx, next) => {
   const userId = ctx.UserId;
   if (!userId) {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
-      errors: ["Authentication failes"]
-    };
+      errors: ["Authentication failed"]
+    });
+    await next();
     return;
   }
   try {
     const loadPromise = await db.Driver.findAll({
-      // include: [
-      //   {
-      //     model: db.Admin,
-      //     as: "broker"
-      // where: { id: Sequelize.col("Load.brokerId") }
-      //   }
-      // ],
-      //   {
-      //     model: db.Company,
-      //     as:"offererCompany",
-      //     where: { id: Sequelize.col('Load.offererCompanyId') }
-      // }
-
       where: { userId }
-      // attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: loadPromise
-    };
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.UNAUTHORIZED;
-    status.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
-      errors: ["Internal server error"]
-    };
+      errors: ["Internal server errors"]
+    });
   }
   await next();
 });
-router.post("/logout", async (ctx,next)=>{
+router.post("/logout", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
   const AdminId = ctx.AdminId;
-  if (!isAdmin)
-  {
-      ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-      ctx.body = {
-          status:false,
-          errors:["Authentication failed",]
-      }
-      await next();
-      return;
+  if (!isAdmin) {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+      status: false,
+      errors: ["Authentication failed"]
+    });
+    await next();
+    return;
   }
-  try{
-      const promise = await db.AdminSession.destroy({
-          where:{AdminId}
-      });
-      ctx.status = HttpStatus.OK;
-      ctx.body = {
-          status:true
-      }
+  try {
+    const promise = await db.AdminSession.destroy({
+      where: { AdminId }
+    });
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
+  } catch (err) {
+    console.log(err);
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
+      status: false,
+      errors: ["Internal server error"]
+    });
   }
-  catch(err)
-  {
-      console.log(err);
-      ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-      ctx.body = {
-          status:false,
-          errors:["Internal server error",]
-      }
-  }
+  await next();
 });
 
 module.exports = router;

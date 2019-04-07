@@ -29,53 +29,47 @@ const router = new Router({
 router.get("/", async (ctx, next) => {
   try {
     const promise = await db.Driver.findAll({});
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: promise
-    };
-    await next();
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
       errors: ["Internal server error"]
-    };
+    });
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
   }
+  await next();
 });
 
 router.get("/:id", async (ctx, next) => {
   try {
     const { id } = ctx.params;
     const promise = await db.Driver.findOne({ where: { id } });
-
-    ctx.status = 200;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
-      data: promise
-    };
-    await next();
+      data: "nothing here now" //promise
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = 400,
-      ctx.body = {
-        status: false,
-        errors: ["Internal Server error"]
-      };
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
+      status: false,
+      errors: ["Internal server error"]
+    });
   }
+  await next();
 });
 
 router.post("/", async (ctx, next) => {
   const UserId = ctx.UserId;
-  
-  if(!UserId)
-  {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status:false,
-      errors:["Authentication failed",]
-    }
+
+  if (!UserId) {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+      status: false,
+      errors: ["Authentication failed"]
+    });
     await next();
     return;
   }
@@ -88,21 +82,19 @@ router.post("/", async (ctx, next) => {
   );
 
   if (validationErrors) {
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
       errors: validationErrors
-    };
+    });
+    await next();
     return;
   }
 
   try {
     const promise = await db.Driver.create(data);
 
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
     ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status: true
-    };
-    await next();
   } catch (err) {
     console.log(err);
     //loop through the errors and create an array of errors
@@ -112,49 +104,41 @@ router.post("/", async (ctx, next) => {
     for (const error of createErrors) {
       errors.push(error.message);
     }
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status: false,
-      errors
-    };
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: false, errors });
   }
+  await next();
 });
 
 router.get("/company-drivers/:id", async (ctx, next) => {
-  const {id} = ctx.params;
+  const { id } = ctx.params;
   const userId = ctx.UserId;
   const isAdmin = ctx.isAdmin;
   if (!userId && !isAdmin) {
-    ctx.status = HttpStatus.UNAUTHORIZED;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
-      errors: ["Authentication failes"]
-    };
+      error: ["Authentication failed"]
+    });
     await next();
     return;
   }
 
-  if(!id)
-  {
-    ctx.status=HttpStatus.OK;
-    ctx.body = {
-      status:false,
-      errors:["id cannot be blank",]
-    }
+  if (!id) {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
+      status: false,
+      errors: ["id cannot be blank"]
+    });
     await next();
     return;
   }
   try {
     const driverPromise = await db.Driver.findAll({
-      where: { userId:id },
-      attributes: { exclude: ["password",] }
+      where: { userId: id },
+      attributes: { exclude: ["password"] }
     });
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: driverPromise
-    };
-    console.log(driverPromise);
+    });
   } catch (err) {
     console.log(err);
     ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;

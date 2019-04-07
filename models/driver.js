@@ -44,24 +44,32 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false
     },
-    "isDeleted":{
-      type:DataTypes.BOOLEAN,
-      defaultValue:false,
-    },
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   });
 
   Driver.associate = function(models) {
     Driver.belongsTo(models.User, { as: "user", allowNull: false });
   };
   Driver.addHook("beforeCreate", function(driver) {
-    driver.password = bcrypt.hashSync(driver.password, bcrypt.genSaltSync(10), null);
+    driver.password = bcrypt.hashSync(
+      driver.password,
+      bcrypt.genSaltSync(10),
+      null
+    );
     console.log("Hooked before create");
   });
 
   Driver.addHook("beforeUpdate", function(driver) {
     console.log("Hooked after update");
-    if(!!driver.password) {
-      driver.password = bcrypt.hashSync(driver.password, bcrypt.genSaltSync(10), null);
+    if (!!driver.password) {
+      driver.password = bcrypt.hashSync(
+        driver.password,
+        bcrypt.genSaltSync(10),
+        null
+      );
       console.log(driver);
     }
   });

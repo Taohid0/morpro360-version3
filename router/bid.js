@@ -18,41 +18,43 @@ const router = new Router({
 router.get("/", async (ctx, next) => {
   try {
     const promise = await db.Bid.findAll({});
-    ctx.status = 200;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
-      data: promise
-    };
-    await next();
+      //data: promise
+      data: "nothing here at this moment"
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = 500;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
       errors: ["Internal server error"]
-    };
+    });
   }
+  await next();
 });
 
 router.get("/:id", async (ctx, next) => {
   try {
     const { id } = ctx.params;
     const promise = await db.Bid.findOne({ where: { id } });
-
-    ctx.status = 200;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
-      data: promise
-    };
-    await next();
+      //data: promise
+      data: "nothing here at this moment"
+    });
+    // ctx.status = 200;
+    // ctx.body = {
+    //   status: true,
+    //   data: promise
+    // };
   } catch (err) {
     console.log(err);
-    (ctx.status = 400),
-      (ctx.body = {
-        status: false,
-        errors: ["Internal Server error"]
-      });
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
+      status: false,
+      errors: ["Internal server error"]
+    });
   }
+  await next();
 });
 
 router.post("/", async (ctx, next) => {
@@ -63,11 +65,11 @@ router.post("/", async (ctx, next) => {
   console.log(UserId);
 
   if (!UserId || !active) {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
-    };
+    });
+    await next();
     return;
   }
   //validate data using joi package
@@ -75,10 +77,11 @@ router.post("/", async (ctx, next) => {
   const validationErrors = validationUtils.isValidRequestData(data, BidSchema);
 
   if (validationErrors) {
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
       errors: validationErrors
-    };
+    });
+    await next();
     return;
   }
 
@@ -86,19 +89,14 @@ router.post("/", async (ctx, next) => {
     const promise = await db.Bid.create(data);
 
     if (!promise) {
-      ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-      ctx.body = {
+      ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
         status: false,
-        errors: ["Internal Server Error"]
-      };
+        errors: ["Internal server error"]
+      });
+      await next();
       return;
     }
-
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status: true
-    };
-    await next();
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
   } catch (err) {
     console.log(err);
     //loop through the errors and create an array of errors
@@ -108,12 +106,9 @@ router.post("/", async (ctx, next) => {
     for (const error of createErrors) {
       errors.push(error.message);
     }
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
-      status: false,
-      errors
-    };
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: false });
   }
+  await next();
 });
 
 router.get("/my-bids", async (ctx, next) => {
@@ -121,11 +116,11 @@ router.get("/my-bids", async (ctx, next) => {
 
   const UserId = ctx.UserId;
   if (!UserId) {
-    ctx.status = HttpStatus.Ok;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
-    };
+    });
+    await next();
     return;
   }
 
@@ -141,7 +136,6 @@ router.get("/my-bids", async (ctx, next) => {
         {
           model: db.Driver,
           as: "driver"
-          //attributes:{exclude:["pickUpaddress","dropOffaddress"]}
         },
         {
           model: db.User,
@@ -149,21 +143,17 @@ router.get("/my-bids", async (ctx, next) => {
           attributes: { exclude: ["password"] }
         }
       ]
-      // attributes:{exclude:["isAssigned",]}
     });
-
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: bidPromise
-    };
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    status.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
       errors: ["Internal server error"]
-    };
+    });
   }
   await next();
 });
@@ -175,52 +165,52 @@ router.get("/winning-bids", async (ctx, next) => {
   console.log("ctx", ctx);
 
   if (!UserId) {
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
-    };
+    });
+    await next();
     return;
   }
 
   try {
     const bidPromise = await db.Bid.findAll({
       where: { bidderId: UserId, isAssigned: true },
-      include: [{
-        model: db.Load,
-        as: "load",
-        include: [{
-          model: db.Admin,
-          as: "admin",
-          attributes:{exclude:["password",]}
-        },]
-      },
-      {
-        model:db.Driver,
-        as:"driver",
-        attributes:{exclude:["password",]}
-      },
-      {
-        model:db.Bidder,
-        as:"bidder",
-        attributes:{"exclude":["password",]}
-      }
-    
-    ]
+      include: [
+        {
+          model: db.Load,
+          as: "load",
+          include: [
+            {
+              model: db.Admin,
+              as: "admin",
+              attributes: { exclude: ["password"] }
+            }
+          ]
+        },
+        {
+          model: db.Driver,
+          as: "driver",
+          attributes: { exclude: ["password"] }
+        },
+        {
+          model: db.Bidder,
+          as: "bidder",
+          attributes: { exclude: ["password"] }
+        }
+      ]
     });
- 
-    ctx.status = HttpStatus.OK;
-    ctx.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: bidPromise
-    };
+    });
   } catch (err) {
     console.log(err);
-    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
-    status.body = {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
       errors: ["Internal server error"]
-    };
+    });
+    ctx.status = HttpStatus.INTERNAL_SERVER_ERROR;
   }
   await next();
 });
@@ -260,7 +250,6 @@ router.post("/assign", async (ctx, next) => {
     console.log(promise, loadPromise);
     if (promise && loadPromise) {
       ctx = ctxHelpter.setResponse(ctx, HttpStatus.OK, { status: true });
-      await next();
     }
   } catch (err) {
     console.log(err);
@@ -270,6 +259,7 @@ router.post("/assign", async (ctx, next) => {
       { status: false, errors: ["Internal Server error", ,] }
     );
   }
+  await next();
 });
 
 module.exports = router;
