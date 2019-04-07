@@ -186,14 +186,27 @@ router.get("/winning-bids", async (ctx, next) => {
   try {
     const bidPromise = await db.Bid.findAll({
       where: { bidderId: UserId, isAssigned: true },
-      include: {
+      include: [{
         model: db.Load,
         as: "load",
-        include: {
+        include: [{
           model: db.Admin,
-          as: "admin"
-        }
+          as: "admin",
+          attributes:{exclude:["password",]}
+        },]
+      },
+      {
+        model:db.Driver,
+        as:"driver",
+        attributes:{exclude:["password",]}
+      },
+      {
+        model:db.Bidder,
+        as:"bidder",
+        attributes:{"exclude":["password",]}
       }
+    
+    ]
     });
  
     ctx.status = HttpStatus.OK;
