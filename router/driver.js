@@ -45,7 +45,7 @@ router.get("/", async (ctx, next) => {
   await next();
 });
 
-router.get("/:id", async (ctx, next) => {
+router.get("/details/:id", async (ctx, next) => {
   try {
     const { id } = ctx.params;
     const promise = await db.Driver.findOne({ where: { id } });
@@ -110,21 +110,29 @@ router.post("/", async (ctx, next) => {
   await next();
 });
 
-router.get("/company-drivers", async (ctx, next) => {
+router.get("/company-drivers/:id", async (ctx, next) => {
   const userId = ctx.UserId;
   const isAdmin = ctx.isAdmin;
+  const { id } = ctx.params;
+  
   if (!userId && !isAdmin) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
-      error: ["Authentication failed"]
+      errors: ["Authentication failed"]
     });
+    await next();
+    return;
+  }
+  if(!id)
+  {
+    ctx = ctxHelper.setResponse(ctx,HttpStatus.OK,{status:false,errors:["id cannot be blank"]});
     await next();
     return;
   }
 
   try {
     const driverPromise = await db.Driver.findAll({
-      where: { userId },
+      where: { userId:id },
       attributes: { exclude: ["password"] }
     });
     ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
