@@ -119,15 +119,29 @@ router.post("/login", async (ctx, next) => {
 });
 
 router.get("/", async (ctx, next) => {
+  const isAdmin = ctx.isAdmin;
+
+  if (!isAdmin) {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+      status: false,
+      errors: ["Authentication failed"]
+    });
+    await next();
+    return;
+  }
   try {
     const promise = await db.Admin.findAll({
+      include: [
+        {
+          model: db.Role
+        }
+      ],
       attributes: { exclude: ["password"] }
     });
     ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: true,
       data: promise
     });
-    await next();
   } catch (err) {
     console.log(err);
     ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
@@ -135,6 +149,7 @@ router.get("/", async (ctx, next) => {
       errors: ["Interlan server error"]
     });
   }
+  await next();
 });
 
 router.get("/:id", async (ctx, next) => {
@@ -149,7 +164,6 @@ router.get("/:id", async (ctx, next) => {
       status: true,
       data: promise
     });
-    await next();
   } catch (err) {
     console.log(err);
     ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
@@ -157,6 +171,7 @@ router.get("/:id", async (ctx, next) => {
       errors: ["Interlal server error"]
     });
   }
+  await next();
 });
 
 router.post("/", async (ctx, next) => {

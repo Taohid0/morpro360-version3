@@ -51,12 +51,41 @@ router.get("/", async (ctx, next) => {
 
 // handle get request for single user
 router.get("/details/:id", async (ctx, next) => {
-  ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
-    status: true,
-    data: "to be added soon"
-  });
+  const { id } = ctx.params;
+  const UserId = ctx.UserId;
+  if (!id) {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
+      status: false,
+      errors: ["id cannot be blank"]
+    });
+    await next();
+    return;
+  }
+  if (!UserId) {
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+      status: false,
+      errors: ["Authentication failed"]
+    });
+    await next();
+    return;
+  }
+  try {
+    const promise = await db.User.findOne({
+      where: { id },
+      attributes: { exclude: ["password"] }
+    });
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
+      status: true,
+      data: promise
+    });
+  } catch (err) {
+    console.log(err);
+    ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
+      status: false
+    });
+  }
+  await next();
 });
-
 //handle post (create) request
 router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
