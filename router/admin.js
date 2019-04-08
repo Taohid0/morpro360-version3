@@ -146,7 +146,7 @@ router.get("/", async (ctx, next) => {
     console.log(err);
     ctx = ctxHelper.setResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, {
       status: false,
-      errors: ["Interlan server error"]
+      errors: ["Internal server error"]
     });
   }
   await next();
