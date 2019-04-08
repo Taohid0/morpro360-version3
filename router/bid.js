@@ -131,7 +131,7 @@ router.get("/my-bids", async (ctx, next) => {
         {
           model: db.Load,
           as: "load",
-          attributes: { exclude: ["pickUpaddress", "dropOffaddress"] }
+          attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
         },
         {
           model: db.Driver,
@@ -162,7 +162,7 @@ router.get("/winning-bids", async (ctx, next) => {
 
   const UserId = ctx.UserId;
 
-  console.log("ctx", ctx);
+  console.log("UserId", UserId);
 
   if (!UserId) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
@@ -194,7 +194,7 @@ router.get("/winning-bids", async (ctx, next) => {
           attributes: { exclude: ["password"] }
         },
         {
-          model: db.Bidder,
+          model: db.User,
           as: "bidder",
           attributes: { exclude: ["password"] }
         }

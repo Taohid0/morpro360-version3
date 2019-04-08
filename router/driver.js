@@ -110,8 +110,7 @@ router.post("/", async (ctx, next) => {
   await next();
 });
 
-router.get("/company-drivers/:id", async (ctx, next) => {
-  const { id } = ctx.params;
+router.get("/company-drivers", async (ctx, next) => {
   const userId = ctx.UserId;
   const isAdmin = ctx.isAdmin;
   if (!userId && !isAdmin) {
@@ -123,17 +122,9 @@ router.get("/company-drivers/:id", async (ctx, next) => {
     return;
   }
 
-  if (!id) {
-    ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
-      status: false,
-      errors: ["id cannot be blank"]
-    });
-    await next();
-    return;
-  }
   try {
     const driverPromise = await db.Driver.findAll({
-      where: { userId: id },
+      where: { userId },
       attributes: { exclude: ["password"] }
     });
     ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
