@@ -9,6 +9,7 @@ const tokenValidation = require("../utils/token");
 const LoadSchema = require("../validation/schema/load");
 const validationUtils = require("../validation/functions/utils");
 const ctxHelper = require("../helper/ctxHelper");
+const configureSearch = require("./utils");
 // passport.use(
 //   new Strategy((username, password, cb) => {
 //     db.User.findOne({ where: { userName: username } }).then(user => {
@@ -165,12 +166,10 @@ router.post("/", async (ctx, next) => {
   await next();
 });
 
-router.get("/available-load", async (ctx, next) => {
+router.post("/available-load", async (ctx, next) => {
   const Op = Sequelize.Op;
 
   const UserId = ctx.UserId;
-
-  console.log("ctx", ctx);
 
   if (!UserId) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
@@ -200,6 +199,14 @@ router.get("/available-load", async (ctx, next) => {
     const loadIds = bidPromise.map(bid => {
       return bid.loadId;
     });
+
+    let conditionObject = {};
+    conditionObject.status = "A";
+    conditionObject.id = { [Op.notIn]: loadIds };
+    
+    conditionObject = configureSearch.configureConditionObject(ctx,conditionObject);
+
+    console.log(conditionObject)
     const loadPromise = await db.Load.findAll({
       include: [
         {
@@ -208,7 +215,8 @@ router.get("/available-load", async (ctx, next) => {
         }
       ],
       order: [["createdAt", "ASC"]],
-      where: { status: "A", id: { [Op.notIn]: loadIds } },
+      // where: { status: "A", id: { [Op.notIn]: loadIds } },
+      where: conditionObject,
       attributes: { exclude: ["pickUpAddress", "dropOffAddress"] }
     });
     ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
