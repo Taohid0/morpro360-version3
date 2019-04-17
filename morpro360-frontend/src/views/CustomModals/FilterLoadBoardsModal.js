@@ -43,27 +43,32 @@ export default class FilterLoadBoardsModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isBidPressed: false,
-      rate: "",
-      driverDropdown: [],
-      note: "",
-      driverId: "",
-      errors: "",
-      isSuccessModalVisible: false,
-      successModalTitle: "Sucessful",
-      modalSuccessMessage: "",
+      name:"",
+      loadDetails:"",
+      minWeight:"",
+      maxWeight:"",
+      minRate:"",
+      maxRate:"",
+      minDistance:"",
+      maxDistance:"",
+      fromPickUpDate:"",
+      toPickUpDate:"",
+      fromDropOffDate:"",
+      toDropOffDate:"",
+      pickUpState:"",
+      dropOffState:"",
+      pickUpCity:"",
+      dropOffCity:"",
+      pickUpZipCode:"",
+      dropOffZipCode:"",
+
       loading: false
     };
 
     this.userService = new UserService();
 
-    this.allCompanies = [];
-    this.allDrivers = [];
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.showBiddingFields = this.showBiddingFields.bind(this);
-    this.fillUpDrivers = this.fillUpDrivers.bind(this);
-    this.toggleSuccessModal = this.toggleSuccessModal.bind(this);
   }
   //this.props.goToDashboard();
   //this will be added later
@@ -165,98 +170,10 @@ export default class FilterLoadBoardsModal extends Component {
     // const driverPromise = await getCompanyDrivers(data[0].id);
     // console.log(driverPromise);
   }
-
-  showBiddingFields() {
-    if (this.state.isBidPressed) {
-      return (
-        <Card>
-          <CardHeader>
-            <strong>Bidding</strong>
-            <small> Form</small>
-          </CardHeader>
-          <CardBody>
-            <LoadingOverlay
-              active={this.state.loading}
-              styles={{
-                spinner: base => ({
-                  ...base,
-                  width: "250px",
-                  background: "rgba(0, 0, 0, 0.2)"
-                })
-              }}
-              spinner
-              text=""
-            />
-            <pre>
-              <h4 className="text-danger">{this.state.errors}</h4>
-            </pre>
-            <Row>
-              <Col>
-                <FormGroup>
-                  <Label htmlFor="rate">Your proposed rate</Label>
-                  <Input
-                    type="number"
-                    id="rate"
-                    placeholder="Enter you rate"
-                    required
-                    name="rate"
-                    value={this.state.rate}
-                    onChange={this.handleChange}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col>
-                <FormGroup>
-                  <Label htmlFor="driverId">Select Driver</Label>
-                  <Input
-                    type="select"
-                    name="driverId"
-                    id="driverId"
-                    value={this.state.driverId}
-                    onChange={this.handleChange}
-                  >
-                    {this.state.driverDropdown}
-                  </Input>
-                </FormGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <FormGroup>
-                  <Label htmlFor="note">Enter additional note (optional)</Label>
-                  <Input
-                    type="textarea"
-                    id="note"
-                    placeholder="Enter additional note (optional)"
-                    required
-                    name="note"
-                    value={this.state.note}
-                    onChange={this.handleChange}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-          </CardBody>
-        </Card>
-      );
-    }
-    return "";
-  }
-
   render() {
-    const load = this.props.loadDetails;
-    return (
-      <Modal
-        isOpen={this.props.isVisible}
-        toggle={this.toggleSuccess}
-        className={"modal-lg " + this.props.className}
-      >
 
-        <ModalHeader toggle={this.toggleSuccess}>Add Filters</ModalHeader>
-        <ModalBody>
+    return (
+      <div>
           <Row>
             <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
               <FormGroup>
@@ -274,7 +191,7 @@ export default class FilterLoadBoardsModal extends Component {
             </Col>
             <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
               <FormGroup>
-                <Label htmlFor="distance">Load Details</Label>
+                <Label htmlFor="loadDetails">Load Details</Label>
                 <Input
                   type="text"
                   id="loadDetails"
@@ -285,11 +202,10 @@ export default class FilterLoadBoardsModal extends Component {
                 />
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+  
             <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
               <FormGroup>
-                <Label htmlFor="name">Mimimum Weight</Label>
+                <Label htmlFor="minWeight">Mimimum Weight</Label>
                 <Input
                   type="number"
                   id="minWeight"
@@ -303,7 +219,7 @@ export default class FilterLoadBoardsModal extends Component {
             </Col>
             <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
               <FormGroup>
-                <Label htmlFor="distance">Maximum Weight</Label>
+                <Label htmlFor="maxWeight">Maximum Weight</Label>
                 <Input
                   type="number"
                   id="maxWeight"
@@ -318,7 +234,7 @@ export default class FilterLoadBoardsModal extends Component {
           <Row>
             <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
               <FormGroup>
-                <Label htmlFor="name">Mimimum Rate</Label>
+                <Label htmlFor="minRate">Mimimum Rate</Label>
                 <Input
                   type="number"
                   id="minRate"
@@ -332,7 +248,7 @@ export default class FilterLoadBoardsModal extends Component {
             </Col>
             <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
               <FormGroup>
-                <Label htmlFor="distance">Maximum Rate</Label>
+                <Label htmlFor="maxRate">Maximum Rate</Label>
                 <Input
                   type="number"
                   id="maxRate"
@@ -343,12 +259,9 @@ export default class FilterLoadBoardsModal extends Component {
                 />
               </FormGroup>
             </Col>
-          </Row>
-
-          <Row>
             <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
               <FormGroup>
-                <Label htmlFor="name">Mimimum Distance</Label>
+                <Label htmlFor="minDistance">Mimimum Distance</Label>
                 <Input
                   type="number"
                   id="minDistance"
@@ -362,7 +275,7 @@ export default class FilterLoadBoardsModal extends Component {
             </Col>
             <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
               <FormGroup>
-                <Label htmlFor="distance">Maximum Distance</Label>
+                <Label htmlFor="maxDistance">Maximum Distance</Label>
                 <Input
                   type="number"
                   id="maxDistance"
@@ -400,9 +313,6 @@ export default class FilterLoadBoardsModal extends Component {
                 />
               </FormGroup>
             </Col>
-          </Row>
-
-          <Row>
             <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
               <FormGroup>
                 <Label htmlFor="fromDropOffDate">From Drop Off Date</Label>
@@ -455,10 +365,6 @@ export default class FilterLoadBoardsModal extends Component {
                 />
               </FormGroup>
             </Col>
-          </Row>
-
-
-          <Row>
             <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
               <FormGroup>
                 <Label htmlFor="pickUpCity">Pick Up City</Label>
@@ -488,7 +394,7 @@ export default class FilterLoadBoardsModal extends Component {
           <Row>
             <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
               <FormGroup>
-                <Label htmlFor="pickUpState">Pick Up Zip Code</Label>
+                <Label htmlFor="pickUpZipCode">Pick Up Zip Code</Label>
                 <Input
                   type="text"
                   id="pickUpZipCode"
@@ -510,18 +416,16 @@ export default class FilterLoadBoardsModal extends Component {
                 />
               </FormGroup>
             </Col>
+            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0"></Col>
+            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0"></Col>
           </Row>
 
-        </ModalBody>
-        <ModalFooter>
           <Button
             color="btn btn-danger"
             onClick={() => {
-              this.props.toggleModal();
-              this.setState({
-                isBidPressed: false
-              });
+              this.props.toggleFilter();
             }}
+            style={{margin:10,marginLeft:0,width:200}}
           >
             Close
           </Button>
@@ -532,13 +436,15 @@ export default class FilterLoadBoardsModal extends Component {
                 isBidPressed: true
               });
             }}
+            style={{margin:10,width:200}}
           >
             {" "}
             Apply Filters
             </Button>
+            <br/>
+            <br/>
+            </div>
 
-        </ModalFooter>
-      </Modal>
     );
   }
 }

@@ -32,7 +32,7 @@ export default class AvailableLoadBoardListing extends Component {
     this.state = {
       loads: [],
       isErrorModalVisible: false,
-      isFilterModalVisible: false,
+      isFiltersVisible: false,
       modalErrorMessage: "",
       isSuccessModalVisible: false,
       successModalTitle: "Sucessful",
@@ -134,7 +134,7 @@ export default class AvailableLoadBoardListing extends Component {
   }
   toggleFilterModal() {
     this.setState((state, props) => ({
-      isFilterModalVisible: !state.isFilterModalVisible
+      isFiltersVisible: !state.isFiltersVisible
     }));
   }
   assignLoadId(id) { }
@@ -170,21 +170,12 @@ export default class AvailableLoadBoardListing extends Component {
           reloadAvailableLoads={this.getAvailableLoad}
           goToDashboard={() => this.props.history.push("/dashboard")}
         />
+        {this.state.isFiltersVisible ? <FilterLoadBoardsModal toggleFilter={this.toggleFilterModal} /> : ""}
 
-        <FilterLoadBoardsModal
-          loadId={this.state.loadId}
-          isVisible={this.state.isFilterModalVisible}
-          errors={this.state.loadDetailsInfo}
-          toggleModal={this.toggleFilterModal}
-          //title = {this.state.successModalTitle}
-          loadDetails={this.state.loadDetails}
-          reloadAvailableLoads={this.getAvailableLoad}
-          goToDashboard={() => this.props.history.push("/dashboard")}
-        />
-
-        <div style={{ paddingBottom: 10 }}>
-          <button className="btn btn-info" onClick={this.toggleFilterModal}>Filter Load Boards</button>
-        </div>
+        {!this.state.isFiltersVisible ?
+          <div style={{ paddingBottom: 10 }}>
+            <button className="btn btn-info" onClick={this.toggleFilterModal}>Filter Load Boards</button>
+          </div> : ""}
         <Row>
           <Col>
             <Card>
