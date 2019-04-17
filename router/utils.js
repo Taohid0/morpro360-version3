@@ -7,15 +7,21 @@ function configureConditionObject(ctx, conditionObject) {
         maxRate, productDetails, pickUpCity, pickUpZipCode, pickUpState,
         dropOffCity, dropOffZipCode, dropOffState } = ctx.request.body;
 
+
+    console.log(name);
+
     if (name != undefined && name.length) {
         // conditionObject.name = (Sequelize.fn("lower",Sequelize.col("name")),  {[Op.like]: "%" + name + "%" });
         conditionObject.name = { [Op.like]: "%" + name + "%" };
     }
 
-    if (minDistance !== undefined) {
+    if (minDistance !== undefined && minDistance.length && maxDistance !== undefined && maxDistance.length) {
+        conditionObject.distance = { [Op.between]: [minDistance, maxDistance] };
+    }
+    else if (minDistance !== undefined && minDistance.length) {
         conditionObject.distance = { [Op.gte]: minDistance };
     }
-    if (maxDistance !== undefined) {
+    else if (maxDistance !== undefined && maxDistance.length) {
         conditionObject.distance = { [Op.lte]: maxDistance };
     }
 
@@ -41,19 +47,26 @@ function configureConditionObject(ctx, conditionObject) {
         conditionObject.dropOffDate = { [Op.lte]: date };
     }
 
-    if (minWeight !== undefined) {
+    if (minWeight !== undefined && minWeight.length && maxWeight !== undefined && maxWeight.length) {
+        conditionObject.weight = { [Op.between]: [minWeight, maxWeight] };
+    }
+
+    else if (minWeight !== undefined && minWeight.length) {
         conditionObject.weight = { [Op.gte]: minWeight };
     }
 
-    if (maxWeight !== undefined) {
+    else if (maxWeight !== undefined && maxWeight.length) {
         conditionObject.weight = { [Op.lte]: maxWeight };
     }
 
-    if (minRate !== undefined) {
+    if (minRate !== undefined && minRate.length && maxRate !== undefined && maxRate.length) {
+        conditionObject.rate = { [Op.between]: [minRate, maxRate] };
+    }
+    else if (minRate !== undefined && minRate.length) {
         conditionObject.rate = { [Op.gte]: minRate };
     }
 
-    if (maxRate !== undefined) {
+    else if (maxRate !== undefined && maxRate.length) {
         conditionObject.rate = { [Op.lte]: maxRate };
     }
 
@@ -76,7 +89,7 @@ function configureConditionObject(ctx, conditionObject) {
     if (dropOffCity != undefined && dropOffCity.length) {
         conditionObject.dropOffCity = { [Op.like]: "%" + dropOffCity + "%" };
     }
-    
+
     if (dropOffZipCode != undefined && dropOffZipCode.length) {
         conditionObject.dropOffZipCode = { [Op.like]: "%" + dropOffZipCode + "%" };
     }

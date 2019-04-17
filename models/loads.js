@@ -17,11 +17,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     weight: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     rate: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false
     },
 

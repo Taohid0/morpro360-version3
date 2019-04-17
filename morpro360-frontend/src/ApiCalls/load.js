@@ -54,18 +54,21 @@ export async function loadDetailsAllFields(id) {
   console.log(promise);
   return promise;
 }
-export async function availableLoad() {
+export async function availableLoad(state) {
   const userService = new UserService();
   const user = await userService.getUser();
 
   const { availableLoadURL } = AppConfig;
+
+  console.log(state);
 
   const promise = await axios({
     headers: {
       Authorization: user.token
     },
     method: "POST",
-    url: availableLoadURL
+    url: availableLoadURL,
+    data:state,
   });
   return promise;
 }

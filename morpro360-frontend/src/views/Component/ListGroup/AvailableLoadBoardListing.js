@@ -23,7 +23,7 @@ import validateInput from "../../../validation/input";
 import DangerModal from "../../CustomModals/DangerModal";
 import SuccessModal from "../../CustomModals/SuccessModal";
 import LoadDetailsModal from "../../CustomModals/LoadDetailsModal";
-import FilterLoadBoardsModal from "../../CustomModals/FilterLoadBoardsModal";
+import FilterLoadBoards from "../../CustomModals/FilterLoadBoards";
 
 export default class AvailableLoadBoardListing extends Component {
   constructor(props) {
@@ -57,7 +57,7 @@ export default class AvailableLoadBoardListing extends Component {
     this.toggleFilterModal = this.toggleFilterModal.bind(this);
   }
   componentWillMount() {
-    this.getAvailableLoad();
+    this.getAvailableLoad({});
     this.loadUserOrRedirect();
   }
   async getLoadDetails(id) {
@@ -87,11 +87,11 @@ export default class AvailableLoadBoardListing extends Component {
     }
   }
 
-  async getAvailableLoad() {
+  async getAvailableLoad(state) {
     this.setState({ loading: true });
     this.setState({ loading: false });
     try {
-      const promise = await availableLoad();
+      const promise = await availableLoad(state);
       console.log(promise);
       if (!promise.data.status) {
         alert(promise.data.errors);
@@ -145,6 +145,7 @@ export default class AvailableLoadBoardListing extends Component {
   async handleSubmit(e) {
     e.preventDefault();
   }
+
   render() {
     return (
       <div className="animated fadeIn">
@@ -170,7 +171,7 @@ export default class AvailableLoadBoardListing extends Component {
           reloadAvailableLoads={this.getAvailableLoad}
           goToDashboard={() => this.props.history.push("/dashboard")}
         />
-        {this.state.isFiltersVisible ? <FilterLoadBoardsModal toggleFilter={this.toggleFilterModal} /> : ""}
+        {this.state.isFiltersVisible ? <FilterLoadBoards reloadAvailableLoads = {this.getAvailableLoad} toggleFilter={this.toggleFilterModal} /> : ""}
 
         {!this.state.isFiltersVisible ?
           <div style={{ paddingBottom: 10 }}>

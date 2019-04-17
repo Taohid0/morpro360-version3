@@ -39,7 +39,7 @@ import { timingSafeEqual } from "crypto";
 
 import SuccessModal from "./SuccessModal";
 
-export default class FilterLoadBoardsModal extends Component {
+export default class FilterLoadBoards extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -432,11 +432,10 @@ export default class FilterLoadBoardsModal extends Component {
           <Button
             color="success"
             onClick={e => {
-              this.setState({
-                isBidPressed: true
-              });
+              this.props.reloadAvailableLoads(this.state);
+              // this.props.toggleFilter();
             }}
-            style={{margin:10,width:200}}
+            style={{margin:10,marginLeft:0,width:200}}
           >
             {" "}
             Apply Filters
