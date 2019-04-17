@@ -25,25 +25,32 @@ function configureConditionObject(ctx, conditionObject) {
         conditionObject.distance = { [Op.lte]: maxDistance };
     }
 
-    if (fromPickUpDate) {
+    if (fromPickUpDate && toPickUpDate) {
+        const fromDate = new Date(fromPickUpDate);
+        const toDate = new Date(toPickUpDate);
+        conditionObject.pickUpDate = { [Op.between]: [fromDate, toDate] };
+    }
+
+    else if (fromPickUpDate) {
         const date = new Date(fromPickUpDate);
-        console.log(date);
         conditionObject.pickUpDate = { [Op.gte]: date };
     }
-    if (toPickUpDate) {
+    else if (toPickUpDate) {
         const date = new Date(toPickUpDate);
-        console.log(date);
         conditionObject.pickUpDate = { [Op.lte]: date };
     }
 
-    if (fromDropOffDate) {
+    if (fromDropOffDate && toDropOffDate) {
+        const fromDate = new Date(fromDropOffDate);
+        const toDate = new Date(toDropOffDate);
+        conditionObject.dropOffDate = { [Op.between]: [fromDate, toDate] };
+    }
+    else if (fromDropOffDate) {
         const date = new Date(fromDropOffDate);
-        console.log(date);
         conditionObject.dropOffDate = { [Op.gte]: date };
     }
-    if (toDropOffDate) {
+    else if (toDropOffDate) {
         const date = new Date(toDropOffDate);
-        console.log(date);
         conditionObject.dropOffDate = { [Op.lte]: date };
     }
 

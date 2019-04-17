@@ -43,24 +43,24 @@ export default class FilterLoadBoards extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name:"",
-      loadDetails:"",
-      minWeight:"",
-      maxWeight:"",
-      minRate:"",
-      maxRate:"",
-      minDistance:"",
-      maxDistance:"",
-      fromPickUpDate:"",
-      toPickUpDate:"",
-      fromDropOffDate:"",
-      toDropOffDate:"",
-      pickUpState:"",
-      dropOffState:"",
-      pickUpCity:"",
-      dropOffCity:"",
-      pickUpZipCode:"",
-      dropOffZipCode:"",
+      name: "",
+      loadDetails: "",
+      minWeight: "",
+      maxWeight: "",
+      minRate: "",
+      maxRate: "",
+      minDistance: "",
+      maxDistance: "",
+      fromPickUpDate: "",
+      toPickUpDate: "",
+      fromDropOffDate: "",
+      toDropOffDate: "",
+      pickUpState: "",
+      dropOffState: "",
+      pickUpCity: "",
+      dropOffCity: "",
+      pickUpZipCode: "",
+      dropOffZipCode: "",
 
       loading: false
     };
@@ -174,275 +174,281 @@ export default class FilterLoadBoards extends Component {
 
     return (
       <div>
-          <Row>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="name">Load Name</Label>
-                <Input
-                  type="text"
-                  id="name"
-                  placeholder="Name of Load"
-                  required
-                  name="name"
-                  value={this.state.name}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="loadDetails">Load Details</Label>
-                <Input
-                  type="text"
-                  id="loadDetails"
-                  placeholder="Load Details"
-                  name="loadDetails"
-                  value={this.state.loadDetails}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-  
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="minWeight">Mimimum Weight</Label>
-                <Input
-                  type="number"
-                  id="minWeight"
-                  placeholder="Minimum Weight"
-                  required
-                  name="minWeight"
-                  value={this.state.minWeight}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="maxWeight">Maximum Weight</Label>
-                <Input
-                  type="number"
-                  id="maxWeight"
-                  placeholder="Maximum Weight"
-                  name="maxWeight"
-                  value={this.state.maxWeight}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="minRate">Mimimum Rate</Label>
-                <Input
-                  type="number"
-                  id="minRate"
-                  placeholder="Minimum Rate"
-                  required
-                  name="minRate"
-                  value={this.state.minRate}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="maxRate">Maximum Rate</Label>
-                <Input
-                  type="number"
-                  id="maxRate"
-                  placeholder="Maximum Rate"
-                  name="maxRate"
-                  value={this.state.maxRate}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="minDistance">Mimimum Distance</Label>
-                <Input
-                  type="number"
-                  id="minDistance"
-                  placeholder="Minimum Distance"
-                  required
-                  name="minDistance"
-                  value={this.state.minDistance}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="maxDistance">Maximum Distance</Label>
-                <Input
-                  type="number"
-                  id="maxDistance"
-                  placeholder="Maximum Distance"
-                  name="maxDistance"
-                  value={this.state.maxDistance}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-          </Row>
+        <Row>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="name">Load Name</Label>
+              <Input
+                type="text"
+                id="name"
+                placeholder="Name of Load"
+                required
+                name="name"
+                value={this.state.name}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="loadDetails">Load Details</Label>
+              <Input
+                type="text"
+                id="loadDetails"
+                placeholder="Load Details"
+                name="loadDetails"
+                value={this.state.loadDetails}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
 
-          <Row>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="fromPickUpDate">From Pick Up Date</Label>
-                <Input
-                  type="date"
-                  id="fromPickUpDate"
-                  name="fromPickUpDate"
-                  value={this.state.fromPickUpDate}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="toPickUpDate">To Pick Up Date</Label>
-                <Input
-                  type="date"
-                  id="toPickUpDate"
-                  name="toPickUpDate"
-                  value={this.state.toPickUpDate}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="fromDropOffDate">From Drop Off Date</Label>
-                <Input
-                  type="date"
-                  id="fromDropOffDate"
-                  name="fromDropOffDate"
-                  value={this.state.fromDropOffDate}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="toDropOffDate">To Drop Off Date</Label>
-                <Input
-                  type="date"
-                  id="toDropOffDate"
-                  name="toDropOffDate"
-                  value={this.state.toDropOffDate}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-          </Row>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="minWeight">Mimimum Weight</Label>
+              <Input
+                type="number"
+                id="minWeight"
+                placeholder="Minimum Weight"
+                required
+                name="minWeight"
+                value={this.state.minWeight}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="maxWeight">Maximum Weight</Label>
+              <Input
+                type="number"
+                id="maxWeight"
+                placeholder="Maximum Weight"
+                name="maxWeight"
+                value={this.state.maxWeight}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+        </Row>
+        <Row>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="minRate">Mimimum Rate</Label>
+              <Input
+                type="number"
+                id="minRate"
+                placeholder="Minimum Rate"
+                required
+                name="minRate"
+                value={this.state.minRate}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="maxRate">Maximum Rate</Label>
+              <Input
+                type="number"
+                id="maxRate"
+                placeholder="Maximum Rate"
+                name="maxRate"
+                value={this.state.maxRate}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="minDistance">Mimimum Distance</Label>
+              <Input
+                type="number"
+                id="minDistance"
+                placeholder="Minimum Distance"
+                required
+                name="minDistance"
+                value={this.state.minDistance}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="maxDistance">Maximum Distance</Label>
+              <Input
+                type="number"
+                id="maxDistance"
+                placeholder="Maximum Distance"
+                name="maxDistance"
+                value={this.state.maxDistance}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="fromPickUpDate">From Pick Up Date</Label>
+              <Input
+                type="date"
+                id="fromPickUpDate"
+                name="fromPickUpDate"
+                value={this.state.fromPickUpDate}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="toPickUpDate">To Pick Up Date</Label>
+              <Input
+                type="date"
+                id="toPickUpDate"
+                name="toPickUpDate"
+                value={this.state.toPickUpDate}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="fromDropOffDate">From Drop Off Date</Label>
+              <Input
+                type="date"
+                id="fromDropOffDate"
+                name="fromDropOffDate"
+                value={this.state.fromDropOffDate}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="toDropOffDate">To Drop Off Date</Label>
+              <Input
+                type="date"
+                id="toDropOffDate"
+                name="toDropOffDate"
+                value={this.state.toDropOffDate}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+        </Row>
 
 
-          <Row>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="pickUpState">Pick Up State</Label>
-                <Input
-                  type="text"
-                  id="pickUpState"
-                  name="pickUpState"
-                  value={this.state.pickUpState}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="dropOffState">Drop Off State</Label>
-                <Input
-                  type="text"
-                  id="dropOffState"
-                  name="dropOffState"
-                  value={this.state.dropOffState}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="pickUpCity">Pick Up City</Label>
-                <Input
-                  type="text"
-                  id="pickUpCity"
-                  name="pickUpCity"
-                  value={this.state.pickUpCity}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="dropOffCity">Drop Off City</Label>
-                <Input
-                  type="text"
-                  id="dropOffCity"
-                  name="dropOffCity"
-                  value={this.state.dropOffCity}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-          </Row>
+        <Row>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="pickUpState">Pick Up State</Label>
+              <Input
+                type="text"
+                id="pickUpState"
+                name="pickUpState"
+                value={this.state.pickUpState}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="dropOffState">Drop Off State</Label>
+              <Input
+                type="text"
+                id="dropOffState"
+                name="dropOffState"
+                value={this.state.dropOffState}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="pickUpCity">Pick Up City</Label>
+              <Input
+                type="text"
+                id="pickUpCity"
+                name="pickUpCity"
+                value={this.state.pickUpCity}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="dropOffCity">Drop Off City</Label>
+              <Input
+                type="text"
+                id="dropOffCity"
+                name="dropOffCity"
+                value={this.state.dropOffCity}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+        </Row>
 
-          <Row>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="pickUpZipCode">Pick Up Zip Code</Label>
-                <Input
-                  type="text"
-                  id="pickUpZipCode"
-                  name="pickUpZipCode"
-                  value={this.state.pickUpZipCode}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-              <FormGroup>
-                <Label htmlFor="dropOffZipCode">Drop Off Zip Code</Label>
-                <Input
-                  type="text"
-                  id="dropOffZipCode"
-                  name="dropOffZipCode"
-                  value={this.state.dropOffZipCode}
-                  onChange={this.handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0"></Col>
-            <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0"></Col>
-          </Row>
+        <Row>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="pickUpZipCode">Pick Up Zip Code</Label>
+              <Input
+                type="text"
+                id="pickUpZipCode"
+                name="pickUpZipCode"
+                value={this.state.pickUpZipCode}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="dropOffZipCode">Drop Off Zip Code</Label>
+              <Input
+                type="text"
+                id="dropOffZipCode"
+                name="dropOffZipCode"
+                value={this.state.dropOffZipCode}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0"></Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0"></Col>
+        </Row>
 
-          <Button
-            color="btn btn-danger"
-            onClick={() => {
-              this.props.toggleFilter();
-            }}
-            style={{margin:10,marginLeft:0,width:200}}
-          >
-            Close
-          </Button>
-          <Button
-            color="success"
-            onClick={e => {
-              this.props.reloadAvailableLoads(this.state);
-              // this.props.toggleFilter();
-            }}
-            style={{margin:10,marginLeft:0,width:200}}
-          >
-            {" "}
-            Apply Filters
+        <Row>
+          <Col align="center">
+            <Button
+              color="success"
+              onClick={e => {
+                this.props.reloadAvailableLoads(this.state);
+                // this.props.toggleFilter();
+              }}
+              style={{ margin: 10, marginLeft: 0, width: 200 }}
+            >
+              {" "}
+              Apply Filters
             </Button>
-            <br/>
-            <br/>
-            </div>
+            <Button
+              color="btn btn-danger"
+              onClick={() => {
+                this.props.toggleFilter();
+              }}
+              style={{ margin: 10, marginLeft: 0, width: 200 }}
+            >
+              Close
+          </Button>
+
+          </Col>
+
+        </Row>
+        <br />
+        <br />
+      </div>
 
     );
   }

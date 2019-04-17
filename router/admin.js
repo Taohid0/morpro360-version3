@@ -251,14 +251,14 @@ router.get("/company-drivers", async (ctx, next) => {
 router.post("/logout", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
   const AdminId = ctx.AdminId;
-  if (!isAdmin) {
-    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
-      status: false,
-      errors: ["Authentication failed"]
-    });
-    await next();
-    return;
-  }
+  // if (!isAdmin) {
+  //   ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+  //     status: false,
+  //     errors: ["Authentication failed"]
+  //   });
+  //   await next();
+  //   return;
+  // }
   try {
     const promise = await db.AdminSession.destroy({
       where: { AdminId }
