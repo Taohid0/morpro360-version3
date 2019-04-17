@@ -23,6 +23,7 @@ import validateInput from "../../../validation/input";
 import DangerModal from "../../CustomModals/DangerModal";
 import SuccessModal from "../../CustomModals/SuccessModal";
 import LoadDetailsModal from "../../CustomModals/LoadDetailsModal";
+import FilterLoadBoardsModal from "../../CustomModals/FilterLoadBoardsModal";
 
 export default class AvailableLoadBoardListing extends Component {
   constructor(props) {
@@ -31,6 +32,7 @@ export default class AvailableLoadBoardListing extends Component {
     this.state = {
       loads: [],
       isErrorModalVisible: false,
+      isFilterModalVisible: false,
       modalErrorMessage: "",
       isSuccessModalVisible: false,
       successModalTitle: "Sucessful",
@@ -52,6 +54,7 @@ export default class AvailableLoadBoardListing extends Component {
     this.getLoadDetails = this.getLoadDetails.bind(this);
     this.getLoadDetails = this.getLoadDetails.bind(this);
     this.loadUserOrRedirect = this.loadUserOrRedirect.bind(this);
+    this.toggleFilterModal = this.toggleFilterModal.bind(this);
   }
   componentWillMount() {
     this.getAvailableLoad();
@@ -111,7 +114,7 @@ export default class AvailableLoadBoardListing extends Component {
         this.props.history.push("/login");
       }
     }
-    
+
   }
 
   toggleDangerModal() {
@@ -129,7 +132,12 @@ export default class AvailableLoadBoardListing extends Component {
       isSuccessModalVisible: !state.isSuccessModalVisible
     }));
   }
-  assignLoadId(id) {}
+  toggleFilterModal() {
+    this.setState((state, props) => ({
+      isFilterModalVisible: !state.isFilterModalVisible
+    }));
+  }
+  assignLoadId(id) { }
 
   handleChange(e) {
     this.setState({ [e.target.name]: e.target.value });
@@ -162,6 +170,21 @@ export default class AvailableLoadBoardListing extends Component {
           reloadAvailableLoads={this.getAvailableLoad}
           goToDashboard={() => this.props.history.push("/dashboard")}
         />
+
+        <FilterLoadBoardsModal
+          loadId={this.state.loadId}
+          isVisible={this.state.isFilterModalVisible}
+          errors={this.state.loadDetailsInfo}
+          toggleModal={this.toggleFilterModal}
+          //title = {this.state.successModalTitle}
+          loadDetails={this.state.loadDetails}
+          reloadAvailableLoads={this.getAvailableLoad}
+          goToDashboard={() => this.props.history.push("/dashboard")}
+        />
+
+        <div style={{ paddingBottom: 10 }}>
+          <button className="btn btn-info" onClick={this.toggleFilterModal}>Filter Load Boards</button>
+        </div>
         <Row>
           <Col>
             <Card>
@@ -171,6 +194,8 @@ export default class AvailableLoadBoardListing extends Component {
                 {/* <small> custom content</small> */}
               </CardHeader>
               <CardBody>
+
+
                 <ListGroup>
                   {this.state.loads.map(load => {
                     return (

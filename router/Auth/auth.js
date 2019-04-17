@@ -96,14 +96,14 @@ router.post("/login", async (ctx, next) => {
 
 router.post("/logout", async (ctx, next) => {
   const UserId = ctx.UserId;
-  if (!UserId) {
-    ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
-      status: false,
-      errors: ["Authentication failed,"]
-    });
-    await next();
-    return;
-  }
+  // if (!UserId) {
+  //   ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
+  //     status: false,
+  //     errors: ["Authentication failed,"]
+  //   });
+  //   await next();
+  //   return;
+  // }
   try {
     const promise = await db.Session.destroy({
       where: { UserId }

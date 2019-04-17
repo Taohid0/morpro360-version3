@@ -64,7 +64,7 @@ export async function availableLoad() {
     headers: {
       Authorization: user.token
     },
-    method: "GET",
+    method: "POST",
     url: availableLoadURL
   });
   return promise;
