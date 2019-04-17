@@ -19,10 +19,70 @@ function configureConditionObject(ctx, conditionObject) {
         conditionObject.distance = { [Op.lte]: maxDistance };
     }
 
-    if (fromPickUpDate !== undefined) {
+    if (fromPickUpDate) {
         const date = new Date(fromPickUpDate);
         console.log(date);
         conditionObject.pickUpDate = { [Op.gte]: date };
+    }
+    if (toPickUpDate) {
+        const date = new Date(toPickUpDate);
+        console.log(date);
+        conditionObject.pickUpDate = { [Op.lte]: date };
+    }
+
+    if (fromDropOffDate) {
+        const date = new Date(fromDropOffDate);
+        console.log(date);
+        conditionObject.dropOffDate = { [Op.gte]: date };
+    }
+    if (toDropOffDate) {
+        const date = new Date(toDropOffDate);
+        console.log(date);
+        conditionObject.dropOffDate = { [Op.lte]: date };
+    }
+
+    if (minWeight !== undefined) {
+        conditionObject.weight = { [Op.gte]: minWeight };
+    }
+
+    if (maxWeight !== undefined) {
+        conditionObject.weight = { [Op.lte]: maxWeight };
+    }
+
+    if (minRate !== undefined) {
+        conditionObject.rate = { [Op.gte]: minRate };
+    }
+
+    if (maxRate !== undefined) {
+        conditionObject.rate = { [Op.lte]: maxRate };
+    }
+
+    if (productDetails != undefined && productDetails.length) {
+        conditionObject.productDetails = { [Op.like]: "%" + productDetails + "%" };
+    }
+
+    if (pickUpCity != undefined && pickUpCity.length) {
+        conditionObject.pickUpCity = { [Op.like]: "%" + pickUpCity + "%" };
+    }
+
+    if (pickUpZipCode != undefined && pickUpZipCode.length) {
+        conditionObject.pickUpZipCode = { [Op.like]: "%" + pickUpZipCode + "%" };
+    }
+
+    if (pickUpState != undefined && pickUpState.length) {
+        conditionObject.pickUpState = { [Op.like]: "%" + pickUpState + "%" };
+    }
+
+    if (dropOffCity != undefined && dropOffCity.length) {
+        conditionObject.dropOffCity = { [Op.like]: "%" + dropOffCity + "%" };
+    }
+    
+    if (dropOffZipCode != undefined && dropOffZipCode.length) {
+        conditionObject.dropOffZipCode = { [Op.like]: "%" + dropOffZipCode + "%" };
+    }
+
+    if (dropOffState != undefined && dropOffState.length) {
+        conditionObject.dropOffState = { [Op.like]: "%" + dropOffState + "%" };
     }
 
     return conditionObject;
