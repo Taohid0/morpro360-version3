@@ -61,6 +61,7 @@ export default class FilterLoadBoards extends Component {
       dropOffCity: "",
       pickUpZipCode: "",
       dropOffZipCode: "",
+      isAdditionalFiltersVisible: false,
 
       loading: false
     };
@@ -68,13 +69,11 @@ export default class FilterLoadBoards extends Component {
     this.userService = new UserService();
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.renderAdditionalFilters = this.renderAdditionalFilters.bind(this);
+    this.toggleAdditionalFilters = this.toggleAdditionalFilters.bind(this);
   }
-  //this.props.goToDashboard();
-  //this will be added later
 
   componentWillMount() {
-    this.fillUpDrivers();
   }
   toggleSuccessModal() {
     this.setState((state, props) => ({
@@ -84,111 +83,147 @@ export default class FilterLoadBoards extends Component {
   handleChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
-  async handleSubmit(e) {
-    e.preventDefault();
-    const {
-      isSuccessModalVisible,
-      modalSuccessMessage,
-      successModalTitle,
-      isBidPressed,
-      driverDropdown,
-      errors,
-      loading,
-      ...stateData
-    } = this.state;
-    stateData.loadId = this.props.loadId;
-    const validationErrors = validateInput(stateData, [
-      "rate",
-      "driverId",
-      "loadId"
-    ]);
-    console.log(stateData);
-    if (validationErrors) {
-      const errormessage = validationErrors.join("\n");
-      this.setState({ errors: errormessage });
-      // this.toggleDangerModal();
-      return;
-    }
 
-    try {
-      this.setState({ loading: true });
-      const response = await createBid(stateData);
-      this.setState({ loading: false });
-      const data = response.data;
-      if (data.status) {
-        this.props.toggleModal();
-        const modalSuccessMessage = "Successfully your bid placed";
-        this.setState({
-          modalSuccessMessage,
-          rate: "",
-          errors: "",
-          isBidPressed: false
-        });
-        // this.toggleSuccessModal();
-        alert(this.state.modalSuccessMessage);
-        this.props.reloadAvailableLoads();
-      } else {
-        const errormessage = data.errors.join("\n");
-        this.setState({ errors: errormessage });
-      }
-    } catch (err) {
-      console.log(err);
-      const response = err.response;
-      if (response && response.status === 401) {
-        const errorMessage = "Session expired, please login to continue";
-        alert(errorMessage);
-        this.userService.clearData();
-        this.props.history.push("/login");
-      } else {
-        const errormessage = "Something wrong, please try again later";
-        this.setState({ errors: errormessage });
-        this.toggleDangerModal();
-      }
+  toggleAdditionalFilters() {
+    this.setState((state, props) => ({
+      isAdditionalFiltersVisible: !state.isAdditionalFiltersVisible
+    }));
+  }
+  renderAdditionalFilters() {
+    const view = <Row>
+      <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+        <FormGroup>
+          <Label htmlFor="pickUpZipCode">Pick Up Zip Code</Label>
+          <Input
+            type="text"
+            id="pickUpZipCode"
+            name="pickUpZipCode"
+            value={this.state.pickUpZipCode}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+      </Col>
+      <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+        <FormGroup>
+          <Label htmlFor="dropOffZipCode">Drop Off Zip Code</Label>
+          <Input
+            type="text"
+            id="dropOffZipCode"
+            name="dropOffZipCode"
+            value={this.state.dropOffZipCode}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+      </Col>
+      <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+        <FormGroup>
+          <Label htmlFor="minRate">Mimimum Rate</Label>
+          <Input
+            type="number"
+            id="minRate"
+            placeholder="Minimum Rate"
+            required
+            name="minRate"
+            value={this.state.minRate}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+      </Col>
+      <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+        <FormGroup>
+          <Label htmlFor="maxRate">Maximum Rate</Label>
+          <Input
+            type="number"
+            id="maxRate"
+            placeholder="Maximum Rate"
+            name="maxRate"
+            value={this.state.maxRate}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+      </Col>
+      <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+        <FormGroup>
+          <Label htmlFor="minDistance">Mimimum Distance</Label>
+          <Input
+            type="number"
+            id="minDistance"
+            placeholder="Minimum Distance"
+            required
+            name="minDistance"
+            value={this.state.minDistance}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+      </Col>
+      <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+        <FormGroup>
+          <Label htmlFor="maxDistance">Maximum Distance</Label>
+          <Input
+            type="number"
+            id="maxDistance"
+            placeholder="Maximum Distance"
+            name="maxDistance"
+            value={this.state.maxDistance}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+      </Col>
+      <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+        <FormGroup>
+          <Label htmlFor="minWeight">Mimimum Weight</Label>
+          <Input
+            type="number"
+            id="minWeight"
+            placeholder="Minimum Weight"
+            required
+            name="minWeight"
+            value={this.state.minWeight}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+      </Col>
+      <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+        <FormGroup>
+          <Label htmlFor="maxWeight">Maximum Weight</Label>
+          <Input
+            type="number"
+            id="maxWeight"
+            placeholder="Maximum Weight"
+            name="maxWeight"
+            value={this.state.maxWeight}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+      </Col>
+      <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+        <FormGroup>
+          <Label htmlFor="name">Load Name</Label>
+          <Input
+            type="text"
+            id="name"
+            placeholder="Name of Load"
+            required
+            name="name"
+            value={this.state.name}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+      </Col>
+    </Row>;
+
+    if (this.state.isAdditionalFiltersVisible) {
+      return view;
     }
+    return "";
   }
 
-  async fillUpDrivers() {
-    this.setState({ loading: true });
-    const user = await this.userService.getUser();
-    const promise = await getCompanyDrivers(user.id);
-    this.setState({ loading: false });
-    const data = promise.data.data;
-
-    const tempDrivers = [];
-
-    for (let driver of data) {
-      tempDrivers.push(
-        <option key={driver.id} value={driver.id}>
-          {driver.name} ({driver.license})
-        </option>
-      );
-    }
-    if (tempDrivers.length > 0) {
-      this.setState({ driverDropdown: tempDrivers, driverId: data[0].id });
-    }
-
-    // const driverPromise = await getCompanyDrivers(data[0].id);
-    // console.log(driverPromise);
-  }
   render() {
 
     return (
       <div>
         <Row>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="name">Load Name</Label>
-              <Input
-                type="text"
-                id="name"
-                placeholder="Name of Load"
-                required
-                name="name"
-                value={this.state.name}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
+
           <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
             <FormGroup>
               <Label htmlFor="loadDetails">Load Details</Label>
@@ -202,93 +237,55 @@ export default class FilterLoadBoards extends Component {
               />
             </FormGroup>
           </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="pickUpState">Pick Up State</Label>
+              <Input
+                type="text"
+                id="pickUpState"
+                name="pickUpState"
+                value={this.state.pickUpState}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="dropOffState">Drop Off State</Label>
+              <Input
+                type="text"
+                id="dropOffState"
+                name="dropOffState"
+                value={this.state.dropOffState}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="pickUpCity">Pick Up City</Label>
+              <Input
+                type="text"
+                id="pickUpCity"
+                name="pickUpCity"
+                value={this.state.pickUpCity}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
+          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
+            <FormGroup>
+              <Label htmlFor="dropOffCity">Drop Off City</Label>
+              <Input
+                type="text"
+                id="dropOffCity"
+                name="dropOffCity"
+                value={this.state.dropOffCity}
+                onChange={this.handleChange}
+              />
+            </FormGroup>
+          </Col>
 
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="minWeight">Mimimum Weight</Label>
-              <Input
-                type="number"
-                id="minWeight"
-                placeholder="Minimum Weight"
-                required
-                name="minWeight"
-                value={this.state.minWeight}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="maxWeight">Maximum Weight</Label>
-              <Input
-                type="number"
-                id="maxWeight"
-                placeholder="Maximum Weight"
-                name="maxWeight"
-                value={this.state.maxWeight}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-        <Row>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="minRate">Mimimum Rate</Label>
-              <Input
-                type="number"
-                id="minRate"
-                placeholder="Minimum Rate"
-                required
-                name="minRate"
-                value={this.state.minRate}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="maxRate">Maximum Rate</Label>
-              <Input
-                type="number"
-                id="maxRate"
-                placeholder="Maximum Rate"
-                name="maxRate"
-                value={this.state.maxRate}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="minDistance">Mimimum Distance</Label>
-              <Input
-                type="number"
-                id="minDistance"
-                placeholder="Minimum Distance"
-                required
-                name="minDistance"
-                value={this.state.minDistance}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="maxDistance">Maximum Distance</Label>
-              <Input
-                type="number"
-                id="maxDistance"
-                placeholder="Maximum Distance"
-                name="maxDistance"
-                value={this.state.maxDistance}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-
-        <Row>
           <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
             <FormGroup>
               <Label htmlFor="fromPickUpDate">From Pick Up Date</Label>
@@ -339,86 +336,7 @@ export default class FilterLoadBoards extends Component {
           </Col>
         </Row>
 
-
-        <Row>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="pickUpState">Pick Up State</Label>
-              <Input
-                type="text"
-                id="pickUpState"
-                name="pickUpState"
-                value={this.state.pickUpState}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="dropOffState">Drop Off State</Label>
-              <Input
-                type="text"
-                id="dropOffState"
-                name="dropOffState"
-                value={this.state.dropOffState}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="pickUpCity">Pick Up City</Label>
-              <Input
-                type="text"
-                id="pickUpCity"
-                name="pickUpCity"
-                value={this.state.pickUpCity}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="dropOffCity">Drop Off City</Label>
-              <Input
-                type="text"
-                id="dropOffCity"
-                name="dropOffCity"
-                value={this.state.dropOffCity}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-
-        <Row>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="pickUpZipCode">Pick Up Zip Code</Label>
-              <Input
-                type="text"
-                id="pickUpZipCode"
-                name="pickUpZipCode"
-                value={this.state.pickUpZipCode}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0">
-            <FormGroup>
-              <Label htmlFor="dropOffZipCode">Drop Off Zip Code</Label>
-              <Input
-                type="text"
-                id="dropOffZipCode"
-                name="dropOffZipCode"
-                value={this.state.dropOffZipCode}
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </Col>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0"></Col>
-          <Col col="6" sm="6" md="6" xl className="mb-3 mb-xl-0"></Col>
-        </Row>
+        {this.renderAdditionalFilters()}
 
         <Row>
           <Col align="center">
@@ -433,6 +351,7 @@ export default class FilterLoadBoards extends Component {
               {" "}
               Apply Filters
             </Button>
+
             <Button
               color="btn btn-danger"
               onClick={() => {
@@ -443,6 +362,16 @@ export default class FilterLoadBoards extends Component {
               Close
           </Button>
 
+            <Button
+              color="info"
+              onClick={e => {
+               this.toggleAdditionalFilters()
+              }}
+              style={{ margin: 10, marginLeft: 0, width: 200 }}
+            >
+              {" "}
+              More Filters
+            </Button>
           </Col>
 
         </Row>
