@@ -1,15 +1,22 @@
 const Koa = require("koa");
 const BodyParser = require("koa-bodyparser");
 const Logger = require("koa-logger");
+const serve = require("koa-static");
+const mount = require("koa-mount");
 const passport = require('koa-passport');
 const cors = require('koa-cors');
 const checkUserMiddleware = require("./middleware/checkUserMiddleware");
 const checkAdminMiddleware = require("./middleware/checkAdminMiddleware");
 const cronJobs = require("./utils/cronJobs");
+
 app = new Koa();
 
+const static_pages = new Koa();
+static_pages.use(serve(__dirname + "/morpro360-frontend/build"));
+app.use(mount("/", static_pages));
+
 // Setting up port and requiring models for syncing
-var PORT = process.env.PORT || 3001;
+var PORT = process.env.PORT || 3000;
 var db = require("./models");
 
 const userRouter = require("./router/user");
@@ -38,13 +45,14 @@ app.use(adminRouter.routes()).use(adminRouter.allowedMethods());
 app.use(roleRouter.routes()).use(roleRouter.allowedMethods());
 
 
+
 //cron jobs
 cronJobs.deleteExpiredTokensCronJob();
 
 
 // Syncing our database and logging a message to the user upon success
-db.sequelize.sync().then(function() {
-    app.listen(PORT, function() {
-      console.log("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
-    });
+db.sequelize.sync().then(function () {
+  app.listen(PORT, function () {
+    console.log("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
   });
+});
