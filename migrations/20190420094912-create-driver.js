@@ -1,18 +1,26 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Users', {
+    return queryInterface.createTable('Drivers', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING(150),
-        allowNull: false,
-        unique: true
+      driverId: {
+        type: Sequelize.INTEGER(11),
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Drivers',
+          key: 'id'
+        }
       },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+  
       phone: {
         type: Sequelize.STRING(25),
         allowNull: false,
@@ -26,35 +34,24 @@ module.exports = {
           isEmail: true
         }
       },
-      MC: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        unique: true
-      },
-      DOT: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        unique: true
-      },
       state: {
         type: Sequelize.STRING,
         allowNull: false
       },
+  
       city: {
         type: Sequelize.STRING,
         allowNull: false
       },
+  
       address: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      description: {
+  
+      license: {
         type: Sequelize.STRING,
-        allowNull: true
-      },
-      active: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
+        allowNull: false
       },
       // The password cannot be null
       password: {
@@ -76,6 +73,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Users');
+    return queryInterface.dropTable('Drivers');
   }
 };

@@ -1,5 +1,6 @@
-module.exports = function(sequelize, DataTypes) {
-  var Bid = sequelize.define("Bid", {
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const Bid =  sequelize.define("Bid", {
     rate: {
       type: DataTypes.INTEGER,
       allowNull: false

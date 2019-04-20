@@ -99,7 +99,7 @@ router.post("/login", async (ctx, next) => {
   //create session data to session table
   const sessionPromise = await db.AdminSession.create({
     token: hashString,
-    AdminId: promise.dataValues.id
+    adminId: promise.dataValues.id
   });
 
   const sessionData = sessionPromise.dataValues;
@@ -250,7 +250,7 @@ router.get("/company-drivers", async (ctx, next) => {
 });
 router.post("/logout", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
-  const AdminId = ctx.AdminId;
+  const adminId = ctx.adminId;
   // if (!isAdmin) {
   //   ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
   //     status: false,
@@ -261,7 +261,7 @@ router.post("/logout", async (ctx, next) => {
   // }
   try {
     const promise = await db.AdminSession.destroy({
-      where: { AdminId }
+      where: { adminId }
     });
     ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
   } catch (err) {

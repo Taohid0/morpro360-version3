@@ -1,5 +1,6 @@
-module.exports = function(sequelize, DataTypes) {
-  var Loads = sequelize.define("Load", {
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const Load = sequelize.define("Load", {
     name: {
       type: DataTypes.STRING,
       allowNull: false
@@ -84,9 +85,9 @@ module.exports = function(sequelize, DataTypes) {
     }
   });
 
-  Loads.associate = function(models) {
-    Loads.belongsTo(models.Admin, { as: "admin", allowNull: false });
+  Load.associate = function(models) {
+    Load.belongsTo(models.Admin, { as: "admin", allowNull: false });
   };
 
-  return Loads;
+  return Load;
 };

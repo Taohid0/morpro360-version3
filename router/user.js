@@ -168,7 +168,7 @@ router.put("/", async (ctx, next) => {
 router.get("/all-users", async (ctx, next) => {
   const isAdmin = ctx.isAdmin;
   const role = ctx.role;
-  const AdminId = ctx.AdminId;
+  const adminId = ctx.adminId;
 
   if (!isAdmin) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
@@ -220,7 +220,7 @@ router.post("/activate", async (ctx, next) => {
 
   const isAdmin = ctx.isAdmin;
   const role = ctx.role;
-  const AdminId = ctx.AdminId;
+  const adminId = ctx.adminId;
   console.log("ID", id);
   if (!isAdmin) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
@@ -272,7 +272,7 @@ router.post("/deactivate", async (ctx, next) => {
 
   const isAdmin = ctx.isAdmin;
   const role = ctx.role;
-  const AdminId = ctx.AdminId;
+  const adminId = ctx.adminId;
   if (!isAdmin) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,

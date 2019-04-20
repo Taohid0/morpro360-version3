@@ -38,7 +38,7 @@ async function checkAdminMiddleware(ctx, next) {
 
       app.context.isAdmin = true;
       app.context.role = role;
-      app.context.AdminId = promise.AdminId;
+      app.context.adminId = promise.adminId;
     } catch (err) {
       console.log(err);
       app.context.isAdmin = false;

@@ -2,20 +2,17 @@
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(150),
       allowNull: false,
       unique: true
     },
     phone: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(25),
       allowNull: false,
       unique: true
     },
-    //MC#:
-    //DOT#
-    // The email cannot be null, and must be a proper email before creation
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(150),
       allowNull: false,
       unique: true,
       validate: {

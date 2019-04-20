@@ -1,19 +1,18 @@
-var bcrypt = require("bcrypt-nodejs");
-
-module.exports = function(sequelize, DataTypes) {
-  var Driver = sequelize.define("Driver", {
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const Driver = sequelize.define("Driver", {
     name: {
       type: DataTypes.STRING,
       allowNull: false
     },
 
     phone: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(25),
       allowNull: false,
       unique: true
     },
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(150),
       allowNull: false,
       unique: true,
       validate: {

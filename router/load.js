@@ -148,7 +148,7 @@ router.post("/", async (ctx, next) => {
 
   try {
     //need to update this
-    data.adminId = ctx.AdminId;
+    data.adminId = ctx.adminId;
     const promise = await db.Load.create(data);
     const laodData = promise.dataValues;
     ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
