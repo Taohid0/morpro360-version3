@@ -17,6 +17,7 @@ async function checkUserMiddleware(ctx, next) {
       const promise = await db.Session.findOne({include: [
         {
           model: db.User,
+          as:"user"
     
         }
       ],
@@ -24,8 +25,6 @@ async function checkUserMiddleware(ctx, next) {
         where: { token, updatedAt: { [Op.gt]: thresholdTime } }
       });
     
-      
-
       if (!promise) {
         // tokenUtils.deleteExpiredTokens();
         app.context.userId = null;
@@ -36,7 +35,7 @@ async function checkUserMiddleware(ctx, next) {
         promise.changed("updatedAt", true);
         promise.save();
         
-        const user = promise.dataValues.User.dataValues;
+        const user = promise.dataValues.user.dataValues;
         app.context.userId = promise.dataValues.userId;
         app.context.active = user.active;
       }

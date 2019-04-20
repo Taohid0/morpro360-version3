@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      userId: {
+      bidderId: {
         type: Sequelize.INTEGER(11),
         onDelete: 'CASCADE',
         references: {
@@ -16,11 +16,11 @@ module.exports = {
           key: 'id'
         }
       },
-      adminId: {
+      loadId: {
         type: Sequelize.INTEGER(11),
         onDelete: 'CASCADE',
         references: {
-          model: "Admins",
+          model: "Loads",
           key: 'id'
         }
       },

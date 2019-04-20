@@ -58,6 +58,7 @@ async function isTokenExists(email) {
       where: { updatedAt: { [Op.gt]: thresholdTime } },
       include: {
         model: db.User,
+        as:"user",
         where: { email }
       }
     });

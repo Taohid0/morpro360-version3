@@ -17,8 +17,10 @@ async function checkAdminMiddleware(ctx, next) {
         include: [
           {
             model: db.Admin,
+            as:"admin",
             include: {
-              model: db.Role
+              model: db.Role,
+              // as:"role"
             }
           }
         ],
@@ -31,7 +33,7 @@ async function checkAdminMiddleware(ctx, next) {
         await next();
         return;
       }
-      const role = promise.dataValues.Admin.dataValues.Role.name;
+      const role = promise.dataValues.admin.dataValues.Role.name;
 
       promise.changed("updatedAt", true);
       promise.save();

@@ -59,12 +59,12 @@ router.get("/:id", async (ctx, next) => {
 
 router.post("/", async (ctx, next) => {
   const data = ctx.request.body;
-  const UserId = ctx.UserId;
+  const userId = ctx.userId;
   const active = ctx.active;
   console.log("request ", data);
-  console.log(UserId);
+  console.log(userId);
 
-  if (!UserId || !active) {
+  if (!userId || !active) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
@@ -73,7 +73,7 @@ router.post("/", async (ctx, next) => {
     return;
   }
   //validate data using joi package
-  data.bidderId = UserId;
+  data.bidderId = userId;
   const validationErrors = validationUtils.isValidRequestData(data, BidSchema);
 
   if (validationErrors) {
@@ -114,8 +114,8 @@ router.post("/", async (ctx, next) => {
 router.get("/my-bids", async (ctx, next) => {
   const Op = Sequelize.Op;
 
-  const UserId = ctx.UserId;
-  if (!UserId) {
+  const userId = ctx.userId;
+  if (!userId) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
@@ -126,7 +126,7 @@ router.get("/my-bids", async (ctx, next) => {
 
   try {
     const bidPromise = await db.Bid.findAll({
-      where: { bidderId: UserId },
+      where: { bidderId: userId },
       include: [
         {
           model: db.Load,
@@ -160,11 +160,11 @@ router.get("/my-bids", async (ctx, next) => {
 router.get("/winning-bids", async (ctx, next) => {
   const Op = Sequelize.Op;
 
-  const UserId = ctx.UserId;
+  const userId = ctx.userId;
 
-  console.log("UserId", UserId);
+  console.log("userId", userId);
 
-  if (!UserId) {
+  if (!userId) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
@@ -175,7 +175,7 @@ router.get("/winning-bids", async (ctx, next) => {
 
   try {
     const bidPromise = await db.Bid.findAll({
-      where: { bidderId: UserId, isAssigned: true },
+      where: { bidderId: userId, isAssigned: true },
       include: [
         {
           model: db.Load,

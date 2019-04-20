@@ -8,11 +8,11 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      driverId: {
+      userId: {
         type: Sequelize.INTEGER(11),
         onDelete: 'CASCADE',
         references: {
-          model: 'Drivers',
+          model: 'Users',
           key: 'id'
         }
       },
