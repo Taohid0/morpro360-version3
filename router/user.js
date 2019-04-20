@@ -52,7 +52,7 @@ router.get("/", async (ctx, next) => {
 // handle get request for single user
 router.get("/details/:id", async (ctx, next) => {
   const { id } = ctx.params;
-  const UserId = ctx.UserId;
+  const userId = ctx.userId;
   if (!id) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,
@@ -61,7 +61,7 @@ router.get("/details/:id", async (ctx, next) => {
     await next();
     return;
   }
-  if (!UserId) {
+  if (!userId) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
@@ -125,7 +125,7 @@ router.post("/", async (ctx, next) => {
     //create session
     const sessionPromise = await db.Session.create({
       token: hashString,
-      UserId: promise.dataValues.id
+      userId: promise.dataValues.id
     });
 
     //extract user data and remove password field

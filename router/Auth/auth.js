@@ -76,7 +76,7 @@ router.post("/login", async (ctx, next) => {
   //create session data to session table
   const sessionPromise = await db.Session.create({
     token: hashString,
-    UserId: promise.dataValues.id
+    userId: promise.dataValues.id
   });
 
   const sessionData = sessionPromise.dataValues;
@@ -95,8 +95,8 @@ router.post("/login", async (ctx, next) => {
 });
 
 router.post("/logout", async (ctx, next) => {
-  const UserId = ctx.UserId;
-  // if (!UserId) {
+  const userId = ctx.userId;
+  // if (!userId) {
   //   ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
   //     status: false,
   //     errors: ["Authentication failed,"]
@@ -106,7 +106,7 @@ router.post("/logout", async (ctx, next) => {
   // }
   try {
     const promise = await db.Session.destroy({
-      where: { UserId }
+      where: { userId }
     });
     ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, { status: true });
   } catch (err) {

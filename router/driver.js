@@ -64,9 +64,9 @@ router.get("/details/:id", async (ctx, next) => {
 });
 
 router.post("/", async (ctx, next) => {
-  const UserId = ctx.UserId;
+  const userId = ctx.userId;
 
-  if (!UserId) {
+  if (!userId) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
@@ -75,7 +75,7 @@ router.post("/", async (ctx, next) => {
     return;
   }
   const data = ctx.request.body;
-  data.userId = UserId;
+  data.userId = userId;
   //validate data using joi package
   const validationErrors = validationUtils.isValidRequestData(
     data,
@@ -111,7 +111,7 @@ router.post("/", async (ctx, next) => {
 });
 
 router.get("/company-drivers/:id", async (ctx, next) => {
-  const userId = ctx.UserId;
+  const userId = ctx.userId;
   const isAdmin = ctx.isAdmin;
   const { id } = ctx.params;
   

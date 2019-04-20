@@ -28,7 +28,7 @@ async function checkUserMiddleware(ctx, next) {
 
       if (!promise) {
         // tokenUtils.deleteExpiredTokens();
-        app.context.UserId = null;
+        app.context.userId = null;
         app.context.active = 0;
       } 
       else 
@@ -37,18 +37,18 @@ async function checkUserMiddleware(ctx, next) {
         promise.save();
         
         const user = promise.dataValues.User.dataValues;
-        app.context.UserId = promise.dataValues.UserId;
+        app.context.userId = promise.dataValues.userId;
         app.context.active = user.active;
       }
     } 
     catch (err) {
       console.log(err);
-      app.context.UserId = null;
+      app.context.userId = null;
       app.context.active = 0;
     }
   }
   else{
-      app.context.UserId = null;
+      app.context.userId = null;
       app.context.active = 0;
   }
  

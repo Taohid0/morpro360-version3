@@ -1,16 +1,16 @@
-module.exports = function(sequelize, DataTypes) {
-    var Role= sequelize.define("Role", {
-       "name":
-      {
-          type:DataTypes.STRING,
-          allowNull:false
-      },
-      "isDeleted":{
-        type:DataTypes.BOOLEAN,
-        defaultValue:false,
-      },
-    });
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const Role = sequelize.define("Role", {
+    "name":
+    {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    "isDeleted": {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+  });
 
-    return Role;
-  };
-  
+  return Role;
+};

@@ -46,8 +46,8 @@ router.get("/", async (ctx, next) => {
 });
 
 router.get("/details/:id", async (ctx, next) => {
-  const UserId = ctx.UserId;
-  if (!UserId) {
+  const userId = ctx.userId;
+  if (!userId) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
@@ -77,10 +77,10 @@ router.get("/details/:id", async (ctx, next) => {
 });
 
 router.get("/details/all-fields/:id", async (ctx, next) => {
-  const UserId = ctx.UserId;
+  const userId = ctx.userId;
   const isAdmin = ctx.isAdmin;
 
-  if (!UserId && !isAdmin) {
+  if (!userId && !isAdmin) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
@@ -169,9 +169,9 @@ router.post("/", async (ctx, next) => {
 router.post("/available-load", async (ctx, next) => {
   const Op = Sequelize.Op;
 
-  const UserId = ctx.UserId;
+  const userId = ctx.userId;
 
-  if (!UserId) {
+  if (!userId) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.UNAUTHORIZED, {
       status: false,
       errors: ["Authentication failed"]
@@ -193,7 +193,7 @@ router.post("/available-load", async (ctx, next) => {
 
   try {
     const bidPromise = await db.Bid.findAll({
-      where: { bidderId: UserId },
+      where: { bidderId: userId },
       attributes: ["loadId"]
     });
     const loadIds = bidPromise.map(bid => {

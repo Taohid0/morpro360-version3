@@ -1,5 +1,6 @@
-module.exports = function(sequelize, DataTypes) {
-  var Session = sequelize.define("Session", {
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const Session = sequelize.define("Session", {
     token: DataTypes.STRING,
     isDeleted: {
       type: DataTypes.BOOLEAN,
@@ -7,8 +8,8 @@ module.exports = function(sequelize, DataTypes) {
     }
   });
 
-  Session.associate = function(models) {
-    Session.belongsTo(models.User, { through: "user" });
+  Session.associate = function (models) {
+    Session.belongsTo(models.User, { as: "user" });
   };
 
   return Session;

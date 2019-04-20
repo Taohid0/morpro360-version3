@@ -222,7 +222,7 @@ router.post("/", async (ctx, next) => {
 });
 
 router.get("/company-drivers", async (ctx, next) => {
-  const userId = ctx.UserId;
+  const userId = ctx.userId;
   if (!userId) {
     ctx = ctxHelper.setResponse(ctx, HttpStatus.OK, {
       status: false,

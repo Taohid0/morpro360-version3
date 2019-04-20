@@ -1,4 +1,4 @@
-const localhost = "http://localhost:3000";
+const localhost = "https://afe40ebb.ngrok.io";
 const server = "";
 const host = localhost;
 
