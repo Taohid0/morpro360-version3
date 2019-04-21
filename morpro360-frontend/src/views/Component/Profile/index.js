@@ -93,10 +93,10 @@ export default class ShowUsersAdmin extends Component {
       const response = err.response;
       console.log(err.response);
       if (response && response.status === 401) {
-        const errorMessage = "Session expired, please login to continue";
-        alert(errorMessage);
-        this.userService.clearData();
-        this.props.history.push("/login");
+        // const errorMessage = "Session expired, please login to continue";
+        // alert(errorMessage);
+        // this.userService.clearData();
+        // this.props.history.push("/login");
       }
     }
   }
